@@ -1,6 +1,7 @@
 [versions]
 
 java = "VERSION_17"
+javanumber = "17"
 
 # Build constants
 minSdk = "26"
