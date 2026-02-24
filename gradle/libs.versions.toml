@@ -1,6 +1,6 @@
 [versions]
 
-java = "VERSION_21"
+java = "VERSION_17"
 
 # Build constants
 minSdk = "26"
