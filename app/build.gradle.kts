@@ -1,8 +1,8 @@
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
     id("ru.practicum.android.diploma.plugins.developproperties")
     id("org.jetbrains.kotlin.plugin.compose")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -18,7 +18,17 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField(type = "String", name = "API_ACCESS_TOKEN", value = "\"${developProperties.apiAccessToken}\"")
+        buildConfigField(
+            type = "String",
+            name = "API_ACCESS_TOKEN",
+            value = "\"${developProperties.apiAccessToken}\""
+        )
+
+        buildConfigField(
+            type = "String",
+            name = "BASE_URL",
+            value = "\"https://android-diploma.education-services.ru/\""
+        )
     }
 
     buildTypes {
@@ -36,10 +46,6 @@ android {
         buildConfig = true
         compose = true
     }
-
-    kotlin {
-        jvmToolchain(libs.versions.javanumber.get().toInt())
-    }
 }
 
 dependencies {
@@ -49,6 +55,9 @@ dependencies {
     // UI layer libraries
     implementation(libs.ui.material)
     implementation(libs.ui.constraintLayout)
+    implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.material3)
 
     // region Unit tests
     testImplementation(libs.unitTests.junit)
@@ -65,10 +74,19 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.androidx.paging.compose)
+    implementation(libs.coil.compose)
+
+    ksp(libs.androidx.room.compiler)
 
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.logging.interceptor)
 }
