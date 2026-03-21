@@ -18,52 +18,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-
-data class AdditionalColors(
-    val cursor: Color,
-    val placeHolder: Color,
-    val gray: Color,
-    val lightGray: Color,
-    val blue: Color,
-    val red: Color,
-    val black: Color,
-    val white: Color
-)
-
-val LocalAdditionalColors = staticCompositionLocalOf {
-    AdditionalColors(
-        cursor = Color.Unspecified,
-        placeHolder = Color.Unspecified,
-        gray = Color.Unspecified,
-        lightGray = Color.Unspecified,
-        blue = Color.Unspecified,
-        red = Color.Unspecified,
-        black = Color.Unspecified,
-        white = Color.Unspecified
-    )
-}
-
-private val DarkColorScheme = darkColorScheme(
-    primary = blackUniversal,
-    onPrimary = whiteUniversal,
-    surface = gray,
-    onSurface = gray,
-    surfaceVariant = lightGray,
-    outlineVariant = lightGray
-
-)
-
-private val LightColorScheme = lightColorScheme(
-    primary = whiteUniversal,
-    onPrimary = blackUniversal,
-    surface = lightGray,
-    onSurface = gray,
-    surfaceVariant = lightGray,
-    outlineVariant = lightGray
-)
-
 @Composable
-fun AppTheme(
+fun Theme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
@@ -111,7 +67,50 @@ fun AppTheme(
     }
 }
 
+val LocalAdditionalColors = staticCompositionLocalOf {
+    AdditionalColors(
+        cursor = Color.Unspecified,
+        placeHolder = Color.Unspecified,
+        gray = Color.Unspecified,
+        lightGray = Color.Unspecified,
+        blue = Color.Unspecified,
+        red = Color.Unspecified,
+        black = Color.Unspecified,
+        white = Color.Unspecified
+    )
+}
+
+private val DarkColorScheme = darkColorScheme(
+    primary = blackUniversal,
+    onPrimary = whiteUniversal,
+    surface = gray,
+    onSurface = gray,
+    surfaceVariant = lightGray,
+    outlineVariant = lightGray
+
+)
+
+private val LightColorScheme = lightColorScheme(
+    primary = whiteUniversal,
+    onPrimary = blackUniversal,
+    surface = lightGray,
+    onSurface = gray,
+    surfaceVariant = lightGray,
+    outlineVariant = lightGray
+)
+
 val MaterialTheme.additionalColors: AdditionalColors
     @Composable
     @ReadOnlyComposable
     get() = LocalAdditionalColors.current
+
+data class AdditionalColors(
+    val cursor: Color,
+    val placeHolder: Color,
+    val gray: Color,
+    val lightGray: Color,
+    val blue: Color,
+    val red: Color,
+    val black: Color,
+    val white: Color
+)
