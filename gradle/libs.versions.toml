@@ -26,6 +26,8 @@ roomCompiler = "2.8.4"
 roomKtx = "2.8.4"
 pagingCompose = "3.4.2"
 coilCompose = "2.7.0"
+datastoreCore = "1.2.1"
+datastorePreferences = "1.2.1"
 
 [libraries]
 
@@ -76,5 +78,7 @@ koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", versi
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomRuntime" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomCompiler" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
+androidx-datastore-core = { group = "androidx.datastore", name = "datastore-core", version.ref = "datastoreCore" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 
 [bundles]
