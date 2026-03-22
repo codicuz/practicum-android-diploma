@@ -13,36 +13,37 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.rememberNavController
+import ru.practicum.android.diploma.ui.navigation.NavBottomBar
+import ru.practicum.android.diploma.ui.navigation.NavGraph
 import ru.practicum.android.diploma.ui.theme.Theme
 
 class RootActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
-            Theme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier
-                            .padding(innerPadding)
-                    )
-                }
-            }
+            RootScreen()
         }
     }
+}
 
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_root)
-//
-//        // Пример использования access token для HeadHunter API
-//        networkRequestExample(accessToken = BuildConfig.API_ACCESS_TOKEN)
-//    }
-//
-//    private fun networkRequestExample(accessToken: String) {
-//        // ...
-//    }
+@Composable
+fun RootScreen() {
+    val navController = rememberNavController()
 
+    Theme {
+        Scaffold(
+            bottomBar = {
+                NavBottomBar(navController)
+            }
+        ) { innerPadding ->
+            NavGraph(
+                navController = navController,
+                modifier = Modifier.padding(innerPadding)
+            )
+        }
+    }
 }
 
 @Composable
