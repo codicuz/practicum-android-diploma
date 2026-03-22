@@ -4,10 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import ru.practicum.android.diploma.ui.favorite.FavoriteContent
 
-@Composable
 @Preview
-fun FavoriteScreenPreview(){
-    DefaultPreviewContainer{
+@Composable
+fun FavoriteScreenPreview() {
+    DefaultPreviewContainer {
         FavoriteContent()
     }
 }

@@ -21,7 +21,6 @@ import ru.practicum.android.diploma.ui.theme.additionalColors
 
 @Composable
 fun NavBottomBar(navController: NavController) {
-
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
@@ -38,7 +37,6 @@ fun NavBottomBar(navController: NavController) {
             thickness = 1.dp,
             color = MaterialTheme.colorScheme.outlineVariant
         )
-
 
         NavigationBar(
             containerColor = MaterialTheme.colorScheme.primary
@@ -90,7 +88,3 @@ fun NavBottomBar(navController: NavController) {
         }
     }
 }
-
-
-
-

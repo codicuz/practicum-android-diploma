@@ -10,12 +10,11 @@ import ru.practicum.android.diploma.presentation.filter.FilterViewModel
 @Composable
 fun FilterScreen(
     viewModel: FilterViewModel = koinViewModel()
-){
+) {
     FilterContent()
 }
 
 @Composable
-fun FilterContent(
-){
+fun FilterContent() {
     Text(text = stringResource(R.string.filter_screen_title))
 }

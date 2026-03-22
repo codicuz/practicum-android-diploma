@@ -10,11 +10,11 @@ import ru.practicum.android.diploma.presentation.vacancy.VacancyViewModel
 @Composable
 fun VacancyScreen(
     viewModel: VacancyViewModel = koinViewModel()
-){
+) {
     VacancyContent()
 }
 
 @Composable
-fun VacancyContent(){
+fun VacancyContent() {
     Text(text = stringResource(R.string.vacancy_screen_title))
 }

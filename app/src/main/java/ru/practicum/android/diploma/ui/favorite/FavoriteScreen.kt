@@ -10,12 +10,11 @@ import ru.practicum.android.diploma.presentation.favorite.FavoriteViewModel
 @Composable
 fun FavoriteScreen(
     viewModel: FavoriteViewModel = koinViewModel()
-){
+) {
     FavoriteContent()
 }
 
 @Composable
-fun FavoriteContent(
-){
+fun FavoriteContent() {
     Text(text = stringResource(R.string.favorite_screen_title))
 }
