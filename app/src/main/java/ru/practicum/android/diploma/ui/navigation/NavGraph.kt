@@ -15,10 +15,9 @@ import ru.practicum.android.diploma.ui.vacancy.VacancyScreen
 fun NavGraph(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-
 ) {
-
-    NavHost(navController = navController,
+    NavHost(
+        navController = navController,
         startDestination = Routes.Home.name,
         modifier = modifier
     ) {

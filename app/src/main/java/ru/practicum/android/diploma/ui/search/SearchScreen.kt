@@ -15,11 +15,6 @@ fun SearchScreen(
 }
 
 @Composable
-fun SearchContent(
-) {
-
-
+fun SearchContent() {
     Text(stringResource(R.string.search_screen_title))
-
 }
-

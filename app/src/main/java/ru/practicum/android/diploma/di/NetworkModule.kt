@@ -5,5 +5,6 @@ import ru.practicum.android.diploma.util.NetworkConnectivityChecker
 
 val networkModule = module {
     single {
-        NetworkConnectivityChecker(context = get())}
+        NetworkConnectivityChecker(context = get())
     }
+}
