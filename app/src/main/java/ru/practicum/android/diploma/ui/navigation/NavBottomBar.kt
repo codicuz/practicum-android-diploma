@@ -40,7 +40,7 @@ fun NavBottomBar(navController: NavController) {
             label = {
                 Text(
                     text = stringResource(R.string.nav_bar_home),
-                    style = MaterialTheme.typography.labelSmall,
+                    style = MaterialTheme.typography.bodySmall,
                 )
             },
             icon = { Icon(painter = painterResource(R.drawable.nav_bar_home), null) }
@@ -55,7 +55,7 @@ fun NavBottomBar(navController: NavController) {
             label = {
                 Text(
                     text = stringResource(R.string.nav_bar_favorite),
-                    style = MaterialTheme.typography.labelSmall,
+                    style = MaterialTheme.typography.bodySmall,
                 )
             },
             icon = { Icon(painter = painterResource(R.drawable.nav_bar_favorite), null) }
@@ -70,7 +70,7 @@ fun NavBottomBar(navController: NavController) {
             label = {
                 Text(
                     text = stringResource(R.string.nav_bar_team),
-                    style = MaterialTheme.typography.labelSmall,
+                    style = MaterialTheme.typography.bodySmall,
                 )
             },
             icon = { Icon(painter = painterResource(R.drawable.nav_bar_team), null) }
