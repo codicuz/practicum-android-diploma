@@ -10,12 +10,16 @@ import ru.practicum.android.diploma.presentation.search.SearchViewModel
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel = koinViewModel()
-){
+) {
     SearchContent()
 }
 
 @Composable
 fun SearchContent(
-){
-    Text(text = stringResource(R.string.search_screen_title))
+) {
+
+
+    Text(stringResource(R.string.search_screen_title))
+
 }
+
