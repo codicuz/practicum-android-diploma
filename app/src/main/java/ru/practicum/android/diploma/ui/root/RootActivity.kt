@@ -3,6 +3,7 @@ package ru.practicum.android.diploma.ui.root
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -13,6 +14,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.rememberNavController
 import ru.practicum.android.diploma.ui.navigation.NavBottomBar
 import ru.practicum.android.diploma.ui.navigation.NavGraph
@@ -21,7 +23,7 @@ import ru.practicum.android.diploma.ui.theme.Theme
 class RootActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        enableEdgeToEdge()
         setContent {
             RootScreen()
         }
@@ -34,6 +36,7 @@ fun RootScreen() {
 
     Theme {
         Scaffold(
+            containerColor = MaterialTheme.colorScheme.primary,
             bottomBar = {
                 NavBottomBar(navController)
             }
