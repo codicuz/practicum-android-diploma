@@ -17,4 +17,22 @@
     <string name="nav_bar_home">Главная</string>
     <string name="nav_bar_favorite">Избранное</string>
     <string name="nav_bar_team">Команда</string>
+
+    <!-- Search screen -->
+    <string name="search_hint">Введите запрос</string>
+    <string name="search_clear">Очистить</string>
+    <string name="search_filter">Фильтр</string>
+    <string name="search_found_vacancies">Найдено %d вакансий</string>
+    <string name="search_empty_result">Таких вакансий нет</string>
+    <string name="search_no_internet">Нет интернета</string>
+    <string name="search_server_error">Ошибка сервера</string>
+
+    <!-- Salary -->
+    <string name="salary_from_to">от %1$d до %2$d %3$s</string>
+    <string name="salary_from">от %1$d %2$s</string>
+    <string name="salary_to">до %1$d %2$s</string>
+    <string name="salary_not_specified">Зарплата не указана</string>
+
+    <string name="toast_no_internet">Проверьте подключение к интернету</string>
+    <string name="toast_error">Произошла ошибка</string>
 </resources>
