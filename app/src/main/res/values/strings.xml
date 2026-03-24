@@ -26,6 +26,14 @@
     <string name="search_empty_result">Таких вакансий нет</string>
     <string name="search_no_internet">Нет интернета</string>
     <string name="search_server_error">Ошибка сервера</string>
+    <string name="filter_settings">Настройки фильтрации</string>
+    <string name="job_location">Место работы</string>
+    <string name="industry">Отрасль</string>
+    <string name="wanted_salary">Ожидаемая зарплата</string>
+    <string name="enter_salary">Введите сумму</string>
+    <string name="do_not_show_without_salary">Не показывать без зарплаты</string>
+    <string name="apply">Применить</string>
+    <string name="reset">Сбросить</string>
 
     <!-- Salary -->
     <string name="salary_from_to">от %1$d до %2$d %3$s</string>

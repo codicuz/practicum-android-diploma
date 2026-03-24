@@ -20,6 +20,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -92,7 +94,8 @@ fun SearchContent(
     onClearSearch: () -> Unit = {},
     onLoadNextPage: () -> Unit = {},
     onVacancyClick: (String) -> Unit = {},
-    onFilterClick: () -> Unit = {}
+    onFilterClick: () -> Unit = {},
+    hasActiveFilter: Boolean = false
 ) {
     Column(
         modifier = Modifier
@@ -114,14 +117,35 @@ fun SearchContent(
                 color = MaterialTheme.colorScheme.onPrimary
             )
 
-            Icon(
-                painter = painterResource(R.drawable.filter_24px),
-                contentDescription = stringResource(R.string.search_filter),
-                tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier
-                    .size(24.dp)
-                    .clickable { onFilterClick() }
-            )
+            Card(
+                modifier = Modifier.size(24.dp),
+                shape = RoundedCornerShape(4.dp),
+                colors = if (!hasActiveFilter) {
+                    CardDefaults.cardColors(
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        containerColor = Color.Transparent
+                    )
+                } else {
+                    CardDefaults.cardColors(
+                        contentColor = MaterialTheme.additionalColors.white,
+                        containerColor = MaterialTheme.additionalColors.blue
+                    )
+                }
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        modifier = Modifier
+                            .clickable {
+                                onFilterClick()
+                            },
+                        painter = painterResource(R.drawable.filter_24px),
+                        contentDescription = null,
+                    )
+                }
+            }
         }
 
         // Строка поиска — без фильтра

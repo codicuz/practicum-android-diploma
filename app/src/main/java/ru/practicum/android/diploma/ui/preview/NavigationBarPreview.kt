@@ -14,7 +14,7 @@ const val MaxHeight = 0.5f
 
 @PreviewScreenSizes
 @Composable
-fun ScreenPreview() {
+fun ScreenPreviewNav() {
     val navController = rememberNavController()
     DefaultPreviewContainer {
         Column {

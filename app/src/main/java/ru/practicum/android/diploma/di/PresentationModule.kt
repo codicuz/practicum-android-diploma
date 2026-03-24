@@ -12,6 +12,6 @@ val presentationModule = module {
     viewModel { TeamViewModel(get()) }
     viewModel { SearchViewModel(get()) }
     viewModel { FavoriteViewModel() }
-    viewModel { FilterViewModel() }
+    viewModel { FilterViewModel(get()) }
     viewModel { VacancyViewModel() }
 }
