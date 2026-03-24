@@ -5,11 +5,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navigation
 import ru.practicum.android.diploma.ui.favorite.FavoriteScreen
-import ru.practicum.android.diploma.ui.filter.FilterScreen
 import ru.practicum.android.diploma.ui.search.SearchScreen
 import ru.practicum.android.diploma.ui.team.TeamScreen
-import ru.practicum.android.diploma.ui.vacancy.VacancyScreen
 
 @Composable
 fun NavGraph(
@@ -18,31 +17,28 @@ fun NavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Routes.Home.name,
+        startDestination = "home_graph",
         modifier = modifier
     ) {
-        composable(route = Routes.Home.name) {
-            SearchScreen()
+        navigation(
+            route = "home_graph",
+            startDestination = Screen.Home.route
+        ) {
+            composable(route = Screen.Home.route) {
+                SearchScreen()
+            }
         }
-        composable(route = Routes.Favorite.name) {
+        composable(route = Screen.Favourite.route) {
             FavoriteScreen()
         }
-        composable(route = Routes.Vacancy.name) {
-            VacancyScreen()
-        }
-        composable(route = Routes.Filter.name) {
-            FilterScreen()
-        }
-        composable(route = Routes.Team.name) {
+//            composable(route = Screen.Vacancy.name) {
+//                VacancyScreen()
+//            }
+//            composable(route = Routes.Filter.name) {
+//                FilterScreen()
+//            }
+        composable(route = Screen.Team.route) {
             TeamScreen()
         }
     }
-}
-
-enum class Routes {
-    Home,
-    Favorite,
-    Filter,
-    Vacancy,
-    Team,
 }
