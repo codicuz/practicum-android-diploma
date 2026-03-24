@@ -12,5 +12,5 @@ sealed interface SearchScreenState {
     ) : SearchScreenState
     data object Empty : SearchScreenState
     data object NoInternet : SearchScreenState
-    data class Error(val message: String) : SearchScreenState
+    data class Error(val message: String?) : SearchScreenState
 }
