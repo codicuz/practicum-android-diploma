@@ -11,9 +11,9 @@ import ru.practicum.android.diploma.util.NetworkConnectivityChecker
 const val ResultCode400 = 400
 const val NO_INTERNET_CODE = -1
 
-
-class RetrofitNetworkClient(private val apiService: ApiService,
-                            private val connectivityChecker: NetworkConnectivityChecker
+class RetrofitNetworkClient(
+    private val apiService: ApiService,
+    private val connectivityChecker: NetworkConnectivityChecker
 ) : NetworkClient {
     override suspend fun doRequest(dto: Any): Response {
         if (!connectivityChecker.isConnected()) {

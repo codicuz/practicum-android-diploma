@@ -16,20 +16,21 @@ val networkModule = module {
     single {
         NetworkConnectivityChecker(context = get())
     }
-    single { OkHttpClient.Builder()
-        .addInterceptor(AuthInterceptor())
-        .addInterceptor(HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        })
-        .build()
+    single {
+        OkHttpClient.Builder()
+            .addInterceptor(AuthInterceptor())
+            .addInterceptor(HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            })
+            .build()
     }
-    single { Retrofit.Builder()
-        .baseUrl(BuildConfig.BASE_URL)
-        .client(get())
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+    single {
+        Retrofit.Builder()
+            .baseUrl(BuildConfig.BASE_URL)
+            .client(get())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
     }
     single { get<Retrofit>().create(ApiService::class.java) }
     single<NetworkClient> { RetrofitNetworkClient(apiService = get(), connectivityChecker = get()) }
 }
-

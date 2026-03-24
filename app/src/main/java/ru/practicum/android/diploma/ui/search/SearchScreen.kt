@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.ui.search
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -45,11 +47,9 @@ import org.koin.androidx.compose.koinViewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.domain.models.Vacancy
 import ru.practicum.android.diploma.presentation.search.SearchScreenState
+import ru.practicum.android.diploma.presentation.search.SearchToastEvent
 import ru.practicum.android.diploma.presentation.search.SearchViewModel
 import ru.practicum.android.diploma.ui.theme.additionalColors
-import android.widget.Toast
-import androidx.compose.ui.platform.LocalFocusManager
-import ru.practicum.android.diploma.presentation.search.SearchToastEvent
 
 @Composable
 fun SearchScreen(
@@ -143,6 +143,7 @@ fun SearchContent(
                 onVacancyClick = onVacancyClick,
                 onLoadNextPage = onLoadNextPage
             )
+
             is SearchScreenState.Empty -> EmptyState()
             is SearchScreenState.NoInternet -> NoInternetState()
             is SearchScreenState.Error -> ErrorState()
@@ -219,8 +220,6 @@ private fun SearchBar(
     }
 }
 
-
-
 // ==================== СОСТОЯНИЯ ====================
 
 @Composable
@@ -253,6 +252,7 @@ private fun LoadingState() {
     }
 }
 
+const val VisibleItemNumber = 5
 @Composable
 private fun ContentState(
     vacancies: List<Vacancy>,
@@ -268,7 +268,7 @@ private fun ContentState(
         derivedStateOf {
             val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
             val totalItems = listState.layoutInfo.totalItemsCount
-            lastVisibleItem >= totalItems - 5
+            lastVisibleItem >= totalItems - VisibleItemNumber
         }
     }
 

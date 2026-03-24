@@ -66,5 +66,5 @@ class VacancyRepositoryImpl(
                 emit(Resource.Error("Server error", response.resultCode))
             }
         }
-    }.flowOn(Dispatchers.IO)  // ← ДОБАВИТЬ
+    }.flowOn(Dispatchers.IO)
 }

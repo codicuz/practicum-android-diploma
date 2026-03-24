@@ -10,6 +10,5 @@ import ru.practicum.android.diploma.domain.models.TeamRepository
 val dataModule = module {
     single { LocalTeamDataSource() }
     single<TeamRepository> { TeamRepositoryImpl(get()) }
-    single<VacancyRepository> { VacancyRepositoryImpl(get()) }  // ← get() найдёт NetworkClient
-
+    single<VacancyRepository> { VacancyRepositoryImpl(get()) }
 }

@@ -73,7 +73,7 @@ class SearchViewModel(
         }
 
         viewModelScope.launch {
-            vacancyInteractor.searchVacancies(       // ← ИСПРАВЛЕНО
+            vacancyInteractor.searchVacancies(
                 query = _searchQuery.value,
                 page = currentPage + 1,
                 perPage = Constants.ITEMS_PER_PAGE
@@ -111,7 +111,7 @@ class SearchViewModel(
             currentPage = 0
             currentVacancies.clear()
 
-            vacancyInteractor.searchVacancies(       // ← ИСПРАВЛЕНО
+            vacancyInteractor.searchVacancies(
                 query = query,
                 page = currentPage + 1,
                 perPage = Constants.ITEMS_PER_PAGE
