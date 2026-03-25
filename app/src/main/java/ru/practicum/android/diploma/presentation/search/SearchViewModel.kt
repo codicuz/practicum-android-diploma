@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.data.network.NO_INTERNET_CODE
 import ru.practicum.android.diploma.domain.api.VacancyInteractor
 import ru.practicum.android.diploma.domain.models.Vacancy
+import ru.practicum.android.diploma.domain.models.VacancySearchResult
 import ru.practicum.android.diploma.util.Constants
 import ru.practicum.android.diploma.util.Resource
 import ru.practicum.android.diploma.util.debounce
@@ -60,48 +61,20 @@ class SearchViewModel(
         currentPage = 0
         maxPages = 0
         _state.value = SearchScreenState.Default
+        resetSearch()
+
     }
 
     fun onLoadNextPage() {
-        if (isNextPageLoading) return
-        if (currentPage + 1 >= maxPages) return
-
-        isNextPageLoading = true
-        val currentState = _state.value
-        if (currentState is SearchScreenState.Content) {
-            _state.value = currentState.copy(isNextPageLoading = true)
-        }
-
+        if (!canLoadNextPage()) return
+        startNextPageLoading()
         viewModelScope.launch {
             vacancyInteractor.searchVacancies(
                 query = _searchQuery.value,
                 page = currentPage + 1,
                 perPage = Constants.ITEMS_PER_PAGE
             ).collect { result ->
-                when (result) {
-                    is Resource.Success -> {
-                        currentPage = result.data.page
-                        maxPages = result.data.pages
-                        currentVacancies.addAll(result.data.vacancies)
-                        _state.value = SearchScreenState.Content(
-                            vacancies = currentVacancies.toList(),
-                            found = result.data.found,
-                            isNextPageLoading = false
-                        )
-                    }
-
-                    is Resource.Error -> {
-                        if (currentState is SearchScreenState.Content) {
-                            _state.value = currentState.copy(isNextPageLoading = false)
-                        }
-                        if (result.code == NO_INTERNET_CODE) {
-                            _toastEvent.emit(SearchToastEvent.NO_INTERNET)
-                        } else {
-                            _toastEvent.emit(SearchToastEvent.SERVER_ERROR)
-                        }
-                    }
-                }
-                isNextPageLoading = false
+                handleNextPageResult(result)
             }
         }
     }
@@ -110,37 +83,95 @@ class SearchViewModel(
         viewModelScope.launch {
             currentPage = 0
             currentVacancies.clear()
-
             vacancyInteractor.searchVacancies(
                 query = query,
                 page = currentPage + 1,
                 perPage = Constants.ITEMS_PER_PAGE
             ).collect { result ->
-                when (result) {
-                    is Resource.Success -> {
-                        val data = result.data
-                        maxPages = data.pages
-                        currentVacancies.addAll(data.vacancies)
-
-                        if (data.vacancies.isEmpty()) {
-                            _state.value = SearchScreenState.Empty
-                        } else {
-                            _state.value = SearchScreenState.Content(
-                                vacancies = currentVacancies.toList(),
-                                found = data.found
-                            )
-                        }
-                    }
-
-                    is Resource.Error -> {
-                        if (result.code == NO_INTERNET_CODE) {
-                            _state.value = SearchScreenState.NoInternet
-                        } else {
-                            _state.value = SearchScreenState.Error(result.message)
-                        }
-                    }
-                }
+                handleSearchResult(result)
             }
+        }
+    }
+
+    private fun resetSearch() {
+        currentVacancies.clear()
+        currentPage = 0
+        maxPages = 0
+        _state.value = SearchScreenState.Default
+    }
+
+    private fun canLoadNextPage(): Boolean {
+        return !isNextPageLoading && currentPage + 1 < maxPages
+    }
+
+    private fun startNextPageLoading() {
+        isNextPageLoading = true
+        val currentState = _state.value
+        if (currentState is SearchScreenState.Content) {
+            _state.value = currentState.copy(isNextPageLoading = true)
+        }
+    }
+
+    private suspend fun handleNextPageResult(result: Resource<VacancySearchResult>) {
+        when (result) {
+            is Resource.Success -> onNextPageSuccess(result.data)
+            is Resource.Error -> onNextPageError(result.code)
+        }
+        isNextPageLoading = false
+    }
+
+    private fun onNextPageSuccess(data: VacancySearchResult) {
+        currentPage = data.page
+        maxPages = data.pages
+        currentVacancies.addAll(data.vacancies)
+        _state.value = SearchScreenState.Content(
+            vacancies = currentVacancies.toList(),
+            found = data.found,
+            isNextPageLoading = false
+        )
+    }
+
+    private suspend fun onNextPageError(code: Int?) {
+        val currentState = _state.value
+        if (currentState is SearchScreenState.Content) {
+            _state.value = currentState.copy(isNextPageLoading = false)
+        }
+        emitToastByCode(code)
+    }
+
+    private fun handleSearchResult(result: Resource<VacancySearchResult>) {
+        when (result) {
+            is Resource.Success -> onSearchSuccess(result.data)
+            is Resource.Error -> onSearchError(result.code, result.message)
+        }
+    }
+
+    private fun onSearchSuccess(data: VacancySearchResult) {
+        maxPages = data.pages
+        currentVacancies.addAll(data.vacancies)
+        _state.value = if (data.vacancies.isEmpty()) {
+            SearchScreenState.Empty
+        } else {
+            SearchScreenState.Content(
+                vacancies = currentVacancies.toList(),
+                found = data.found
+            )
+        }
+    }
+
+    private fun onSearchError(code: Int?, message: String?) {
+        _state.value = if (code == NO_INTERNET_CODE) {
+            SearchScreenState.NoInternet
+        } else {
+            SearchScreenState.Error(message)
+        }
+    }
+
+    private suspend fun emitToastByCode(code: Int?) {
+        if (code == NO_INTERNET_CODE) {
+            _toastEvent.emit(SearchToastEvent.NO_INTERNET)
+        } else {
+            _toastEvent.emit(SearchToastEvent.SERVER_ERROR)
         }
     }
 }
