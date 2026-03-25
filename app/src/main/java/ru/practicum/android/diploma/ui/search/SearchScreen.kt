@@ -1,7 +1,6 @@
 package ru.practicum.android.diploma.ui.search
 
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,15 +36,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.domain.models.Vacancy
@@ -54,6 +50,12 @@ import ru.practicum.android.diploma.presentation.filter.hasActiveFilters
 import ru.practicum.android.diploma.presentation.search.SearchScreenState
 import ru.practicum.android.diploma.presentation.search.SearchToastEvent
 import ru.practicum.android.diploma.presentation.search.SearchViewModel
+import ru.practicum.android.diploma.ui.components.BinocularMan
+import ru.practicum.android.diploma.ui.components.ErrorState
+import ru.practicum.android.diploma.ui.components.NoInternetState
+import ru.practicum.android.diploma.ui.components.NoVacancies
+import ru.practicum.android.diploma.ui.components.VacancyItem
+import ru.practicum.android.diploma.ui.components.formatSalary
 import ru.practicum.android.diploma.ui.theme.additionalColors
 
 @Composable
@@ -110,7 +112,6 @@ fun SearchContent(
             .fillMaxSize()
             .padding(horizontal = 16.dp)
     ) {
-        // Заголовок + фильтр В ОДНОЙ СТРОКЕ
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -156,7 +157,6 @@ fun SearchContent(
             }
         }
 
-        // Строка поиска — без фильтра
         SearchBar(
             query = searchQuery,
             onQueryChanged = onQueryChanged,
@@ -177,8 +177,8 @@ fun SearchContent(
             )
 
             is SearchScreenState.Empty -> EmptyState()
-            is SearchScreenState.NoInternet -> NoInternetState()
-            is SearchScreenState.Error -> ErrorState()
+            is SearchScreenState.NoInternet -> NoInternet()
+            is SearchScreenState.Error -> Error()
         }
     }
 }
@@ -200,7 +200,6 @@ private fun SearchBar(
             .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Текстовое поле — слева, занимает всё место
         BasicTextField(
             value = query,
             onValueChange = onQueryChanged,
@@ -228,7 +227,6 @@ private fun SearchBar(
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        // Справа: лупа или крестик
         if (query.isEmpty()) {
             Icon(
                 painter = painterResource(R.drawable.search_24px),
@@ -252,21 +250,10 @@ private fun SearchBar(
     }
 }
 
-// ==================== СОСТОЯНИЯ ====================
 
 @Composable
 private fun DefaultPlaceholder() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Image(
-            painter = painterResource(R.drawable.glasses),
-            contentDescription = null,
-            modifier = Modifier.size(272.dp)
-        )
-    }
+    BinocularMan()
 }
 
 @Composable
@@ -295,7 +282,6 @@ private fun ContentState(
 ) {
     val listState = rememberLazyListState()
 
-    // Определяем, нужно ли подгружать следующую страницу
     val shouldLoadMore by remember {
         derivedStateOf {
             val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
@@ -311,7 +297,6 @@ private fun ContentState(
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Количество найденных вакансий
         Text(
             text = stringResource(R.string.search_found_vacancies, found),
             style = MaterialTheme.typography.bodyMedium,
@@ -328,13 +313,12 @@ private fun ContentState(
                 items = vacancies,
                 key = { it.id }
             ) { vacancy ->
-                VacancyItem(
+                VacancyCard(
                     vacancy = vacancy,
                     onClick = { onVacancyClick(vacancy.id) }
                 )
             }
 
-            // Индикатор подгрузки следующей страницы
             if (isNextPageLoading) {
                 item {
                     Box(
@@ -357,155 +341,23 @@ private fun ContentState(
 
 @Composable
 private fun EmptyState() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Image(
-            painter = painterResource(R.drawable.cat),
-            contentDescription = null,
-            modifier = Modifier.size(272.dp)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = stringResource(R.string.search_empty_result),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onPrimary
-        )
-    }
+    NoVacancies()
+}
+@Composable
+private fun NoInternet() {
+    NoInternetState()
 }
 
 @Composable
-private fun NoInternetState() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Image(
-            painter = painterResource(R.drawable.skull),
-            contentDescription = null,
-            modifier = Modifier.size(272.dp)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = stringResource(R.string.search_no_internet),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onPrimary
-        )
-    }
+private fun Error() {
+    ErrorState()
 }
 
 @Composable
-private fun ErrorState() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Image(
-            painter = painterResource(R.drawable.error),
-            contentDescription = null,
-            modifier = Modifier.size(272.dp)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = stringResource(R.string.search_server_error),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onPrimary
-        )
-    }
-}
-
-// ==================== КАРТОЧКА ВАКАНСИИ ====================
-
-@Composable
-private fun VacancyItem(
-    vacancy: Vacancy,
-    onClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.surface)
-            .clickable { onClick() }
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Лого работодателя
-        AsyncImage(
-            model = vacancy.employerLogoUrl,
-            contentDescription = null,
-            placeholder = painterResource(R.drawable.placeholder_employer),
-            error = painterResource(R.drawable.placeholder_employer),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(48.dp)
-                .clip(RoundedCornerShape(12.dp))
-        )
-
-        Spacer(modifier = Modifier.width(12.dp))
-
-        Column(modifier = Modifier.weight(1f)) {
-            // Название вакансии + город
-            Text(
-                text = "${vacancy.name}, ${vacancy.areaName}",
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onPrimary,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // Работодатель
-            Text(
-                text = vacancy.employerName,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onPrimary,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // Зарплата
-            Text(
-                text = formatSalary(vacancy),
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onPrimary
-            )
-        }
-    }
-}
-
-@Composable
-private fun formatSalary(vacancy: Vacancy): String {
-    val from = vacancy.salaryFrom
-    val to = vacancy.salaryTo
-    val currency = getCurrencySymbol(vacancy.salaryCurrency)
-
-    return when {
-        from != null && to != null -> stringResource(R.string.salary_from_to, from, to, currency)
-        from != null -> stringResource(R.string.salary_from, from, currency)
-        to != null -> stringResource(R.string.salary_to, to, currency)
-        else -> stringResource(R.string.salary_not_specified)
-    }
-}
-
-private fun getCurrencySymbol(currency: String?): String {
-    return when (currency) {
-        "RUR", "RUB" -> "₽"
-        "USD" -> "$"
-        "EUR" -> "€"
-        "KZT" -> "₸"
-        "UAH" -> "₴"
-        "BYR" -> "Br"
-        "GEL" -> "₾"
-        "AZN" -> "₼"
-        "UZS" -> "сўм"
-        else -> currency ?: ""
-    }
+private fun VacancyCard(vacancy: Vacancy, onClick: () -> Unit) {
+    VacancyItem(
+        vacancy = vacancy,
+        onClick = onClick
+    )
+    formatSalary(vacancy = vacancy)
 }
