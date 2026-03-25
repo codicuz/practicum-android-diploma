@@ -97,7 +97,9 @@ class FilterViewModel(
         _state.update { currentState ->
             currentState.copy(
                 selectedCountryId = null,
-                selectedCountryName = null
+                selectedCountryName = null,
+                selectedRegionId = null,
+                selectedRegionName = null
             )
         }
     }

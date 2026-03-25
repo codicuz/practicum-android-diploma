@@ -43,4 +43,14 @@
 
     <string name="toast_no_internet">Проверьте подключение к интернету</string>
     <string name="toast_error">Произошла ошибка</string>
+
+    <string name="country_select">Выбор страны</string>
+    <string name="region_select">Выбор региона</string>
+    <string name="job_country">Страна</string>
+    <string name="job_region">Регион</string>
+    <string name="enter_region">Введите регион</string>
+    <string name="industry_select">Выбор отрасли</string>
+    <string name="enter_industry">Введите отрасль</string>
+    <string name="job_location_select">Выбор места работы</string>
+    <string name="choose">Выбрать</string>
 </resources>

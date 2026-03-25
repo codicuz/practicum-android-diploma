@@ -32,5 +32,5 @@ val networkModule = module {
             .build()
     }
     single { get<Retrofit>().create(ApiService::class.java) }
-    single<NetworkClient> { RetrofitNetworkClient(apiService = get(), connectivityChecker = get()) }
+    single<NetworkClient> { RetrofitNetworkClient(apiService = get()) }
 }

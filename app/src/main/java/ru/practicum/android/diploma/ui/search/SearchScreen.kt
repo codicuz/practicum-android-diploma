@@ -28,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -48,6 +49,8 @@ import coil.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.domain.models.Vacancy
+import ru.practicum.android.diploma.presentation.filter.FilterViewModel
+import ru.practicum.android.diploma.presentation.filter.hasActiveFilters
 import ru.practicum.android.diploma.presentation.search.SearchScreenState
 import ru.practicum.android.diploma.presentation.search.SearchToastEvent
 import ru.practicum.android.diploma.presentation.search.SearchViewModel
@@ -56,6 +59,7 @@ import ru.practicum.android.diploma.ui.theme.additionalColors
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel = koinViewModel(),
+    filterViewModel: FilterViewModel = koinViewModel(),
     onVacancyClick: (String) -> Unit = {},
     onFilterClick: () -> Unit = {}
 ) {
@@ -65,6 +69,9 @@ fun SearchScreen(
 
     val noInternetMessage = stringResource(R.string.toast_no_internet)
     val errorMessage = stringResource(R.string.toast_error)
+
+    val filterState by filterViewModel.state.collectAsState()
+    val hasActiveFilters = filterState.hasActiveFilters()
 
     LaunchedEffect(Unit) {
         viewModel.toastEvent.collect { event ->
@@ -82,7 +89,8 @@ fun SearchScreen(
         onClearSearch = viewModel::onClearSearch,
         onLoadNextPage = viewModel::onLoadNextPage,
         onVacancyClick = onVacancyClick,
-        onFilterClick = onFilterClick
+        onFilterClick = onFilterClick,
+        hasActiveFilter = hasActiveFilters
     )
 }
 
