@@ -11,18 +11,32 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
-import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.ui.theme.additionalColors
 
 @Composable
 fun NavBottomBar(navController: NavController) {
+    val items = listOf(
+        Screen.Home,
+        Screen.Favourite,
+        Screen.Team
+    )
+
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+
+    val shouldShow = currentDestination?.hierarchy?.any {
+        it.route in items.map { screen -> screen.route }
+    }
+
+    shouldShow?.let { if (!it) return }
 
     val barColors = NavigationBarItemDefaults.colors(
         selectedIconColor = MaterialTheme.additionalColors.blue,
@@ -31,6 +45,10 @@ fun NavBottomBar(navController: NavController) {
         unselectedIconColor = MaterialTheme.additionalColors.gray,
         indicatorColor = Color.Transparent,
     )
+
+    currentDestination?.hierarchy?.any {
+        it.route in items.map { screen -> screen.route }
+    }
 
     Column {
         HorizontalDivider(
@@ -41,50 +59,38 @@ fun NavBottomBar(navController: NavController) {
         NavigationBar(
             containerColor = MaterialTheme.colorScheme.primary
         ) {
-            NavigationBarItem(
-                colors = barColors,
-                selected = currentDestination?.route == Routes.Home.name,
-                onClick = {
-                    navController.navigate(Routes.Home.name)
-                },
-                label = {
-                    Text(
-                        text = stringResource(R.string.nav_bar_home),
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                },
-                icon = { Icon(painter = painterResource(R.drawable.nav_bar_home), null) }
-            )
+            items.forEach { screen ->
+                val selected = currentDestination?.hierarchy?.any {
+                    it.route == screen.route
+                } == true
 
-            NavigationBarItem(
-                colors = barColors,
-                selected = currentDestination?.route == Routes.Favorite.name,
-                onClick = {
-                    navController.navigate(Routes.Favorite.name)
-                },
-                label = {
-                    Text(
-                        text = stringResource(R.string.nav_bar_favorite),
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                },
-                icon = { Icon(painter = painterResource(R.drawable.nav_bar_favorite), null) }
-            )
+                NavigationBarItem(
+                    colors = barColors,
+                    selected = selected,
+                    onClick = {
+                        navController.navigate(screen.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
 
-            NavigationBarItem(
-                colors = barColors,
-                selected = currentDestination?.route == Routes.Team.name,
-                onClick = {
-                    navController.navigate(Routes.Team.name)
-                },
-                label = {
-                    Text(
-                        text = stringResource(R.string.nav_bar_team),
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                },
-                icon = { Icon(painter = painterResource(R.drawable.nav_bar_team), null) }
-            )
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    label = {
+                        Text(
+                            text = stringResource(screen.labelRes!!),
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    },
+                    icon = {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(screen.icon!!),
+                            contentDescription = null
+                        )
+                    }
+                )
+            }
         }
     }
 }

@@ -19,12 +19,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -42,6 +45,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.domain.models.Vacancy
+import ru.practicum.android.diploma.presentation.filter.FilterViewModel
+import ru.practicum.android.diploma.presentation.filter.hasActiveFilters
 import ru.practicum.android.diploma.presentation.search.SearchScreenState
 import ru.practicum.android.diploma.presentation.search.SearchToastEvent
 import ru.practicum.android.diploma.presentation.search.SearchViewModel
@@ -56,6 +61,7 @@ import ru.practicum.android.diploma.ui.theme.additionalColors
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel = koinViewModel(),
+    filterViewModel: FilterViewModel = koinViewModel(),
     onVacancyClick: (String) -> Unit = {},
     onFilterClick: () -> Unit = {}
 ) {
@@ -65,6 +71,9 @@ fun SearchScreen(
 
     val noInternetMessage = stringResource(R.string.toast_no_internet)
     val errorMessage = stringResource(R.string.toast_error)
+
+    val filterState by filterViewModel.state.collectAsState()
+    val hasActiveFilters = filterState.hasActiveFilters()
 
     LaunchedEffect(Unit) {
         viewModel.toastEvent.collect { event ->
@@ -82,7 +91,8 @@ fun SearchScreen(
         onClearSearch = viewModel::onClearSearch,
         onLoadNextPage = viewModel::onLoadNextPage,
         onVacancyClick = onVacancyClick,
-        onFilterClick = onFilterClick
+        onFilterClick = onFilterClick,
+        hasActiveFilter = hasActiveFilters
     )
 }
 
@@ -94,7 +104,8 @@ fun SearchContent(
     onClearSearch: () -> Unit = {},
     onLoadNextPage: () -> Unit = {},
     onVacancyClick: (String) -> Unit = {},
-    onFilterClick: () -> Unit = {}
+    onFilterClick: () -> Unit = {},
+    hasActiveFilter: Boolean = false
 ) {
     Column(
         modifier = Modifier
@@ -115,14 +126,35 @@ fun SearchContent(
                 color = MaterialTheme.colorScheme.onPrimary
             )
 
-            Icon(
-                painter = painterResource(R.drawable.filter_24px),
-                contentDescription = stringResource(R.string.search_filter),
-                tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier
-                    .size(24.dp)
-                    .clickable { onFilterClick() }
-            )
+            Card(
+                modifier = Modifier.size(24.dp),
+                shape = RoundedCornerShape(4.dp),
+                colors = if (!hasActiveFilter) {
+                    CardDefaults.cardColors(
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        containerColor = Color.Transparent
+                    )
+                } else {
+                    CardDefaults.cardColors(
+                        contentColor = MaterialTheme.additionalColors.white,
+                        containerColor = MaterialTheme.additionalColors.blue
+                    )
+                }
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        modifier = Modifier
+                            .clickable {
+                                onFilterClick()
+                            },
+                        painter = painterResource(R.drawable.filter_24px),
+                        contentDescription = null,
+                    )
+                }
+            }
         }
 
         SearchBar(
@@ -218,7 +250,6 @@ private fun SearchBar(
     }
 }
 
-
 @Composable
 private fun DefaultPlaceholder() {
     BinocularMan()
@@ -240,6 +271,7 @@ private fun LoadingState() {
 }
 
 const val VisibleItemNumber = 5
+
 @Composable
 private fun ContentState(
     vacancies: List<Vacancy>,
@@ -311,6 +343,7 @@ private fun ContentState(
 private fun EmptyState() {
     NoVacancies()
 }
+
 @Composable
 private fun NoInternet() {
     NoInternetState()
