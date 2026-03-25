@@ -51,6 +51,7 @@ fun NavGraph(
                     }
                 )
             }
+
             composable(Screen.JobLocation.route) { _ ->
                 JobLocationScreen(
                     navController = navController,
@@ -109,9 +110,11 @@ fun NavGraph(
                 )
             }
         }
+
         composable(route = Screen.Favourite.route) {
             FavoriteScreen()
         }
+
         composable(route = Screen.Team.route) {
             TeamScreen()
         }

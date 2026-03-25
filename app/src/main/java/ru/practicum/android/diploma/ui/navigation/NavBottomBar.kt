@@ -32,6 +32,12 @@ fun NavBottomBar(navController: NavController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
+    val shouldShow = currentDestination?.hierarchy?.any {
+        it.route in items.map { screen -> screen.route }
+    }
+
+    shouldShow?.let { if (!it) return }
+
     val barColors = NavigationBarItemDefaults.colors(
         selectedIconColor = MaterialTheme.additionalColors.blue,
         selectedTextColor = MaterialTheme.additionalColors.blue,
