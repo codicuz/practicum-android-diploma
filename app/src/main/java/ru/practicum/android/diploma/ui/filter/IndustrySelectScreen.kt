@@ -1,6 +1,5 @@
 package ru.practicum.android.diploma.ui.filter
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -101,62 +100,16 @@ fun IndustrySelectContent(
     }
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         SimpleTopBarTempl(
             modifier = modifier.padding(start = 4.dp),
             text = title,
             onNavigationClick = onNavigationClick
         )
-        TextField(
-            state = textFieldState,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .height(56.dp),
-            lineLimits = TextFieldLineLimits.SingleLine,
-            contentPadding = PaddingValues(start = 16.dp),
-            textStyle = MaterialTheme.typography.bodyMedium.copy(
-                color = MaterialTheme.additionalColors.black
-            ),
-            placeholder = {
-                Text(
-                    text = stringResource(R.string.enter_industry),
-                    color = MaterialTheme.additionalColors.placeHolder,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            },
-            shape = RoundedCornerShape(12.dp),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                cursorColor = MaterialTheme.additionalColors.cursor
-            ),
-            trailingIcon = {
-                val icon = if (textFieldState.text.isEmpty()) {
-                    painterResource(R.drawable.search_24px)
-                } else {
-                    painterResource(R.drawable.ic_clear)
-                }
-                IconButton(
-                    onClick = {
-                        if (textFieldState.text.isNotEmpty()) {
-                            textFieldState.edit {
-                                replace(0, length, "")
-                            }
-                        }
-                    }
-                ) {
-                    Icon(
-                        painter = icon,
-                        contentDescription = "",
-                        tint = MaterialTheme.additionalColors.black
-                    )
-                }
-            }
+
+        IndustrySearchTextField(
+            textFieldState = textFieldState
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -166,67 +119,168 @@ fun IndustrySelectContent(
                 .weight(1f)
                 .padding(horizontal = 16.dp)
         ) {
-            when {
-                state.isLoading -> {
-                    Log.d("UI_TEST", "Показываем загрузку, isLoading = ${state.isLoading}")
-                    CircularIndicator()
-                }
+            IndustryContentState(
+                state = state,
+                onIndustrySelected = onIndustrySelected
+            )
+        }
 
-                state.error != null -> {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Text(
-                            text = "Ошибка: ${state.error}",
-                            color = MaterialTheme.additionalColors.red
-                        )
-                    }
-                }
+        IndustryConfirmButton(
+            selectedIndustryId = state.selectedIndustryId,
+            onConfirmClick = onConfirmClick
+        )
+    }
+}
 
-                state.filteredIndustries.isEmpty() -> {
-                    Text(
-                        text = if (state.searchQuery.isNotEmpty()) {
-                            "Ничего не найдено"
-                        } else {
-                            "Список индустрий пуст"
-                        },
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
-
-                else -> {
-                    Log.d("fff", state.industries.toString())
-
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                    ) {
-                        items(state.filteredIndustries) { industry ->
-                            IndustryRadioItem(
-                                industry = industry,
-                                isSelected = industry.id == state.selectedIndustryId,
-                                onIndustrySelected = { onIndustrySelected(industry.id) }
-                            )
+@Composable
+private fun IndustrySearchTextField(
+    textFieldState: androidx.compose.foundation.text.input.TextFieldState
+) {
+    TextField(
+        state = textFieldState,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .height(56.dp),
+        lineLimits = TextFieldLineLimits.SingleLine,
+        contentPadding = PaddingValues(start = 16.dp),
+        textStyle = MaterialTheme.typography.bodyMedium.copy(
+            color = MaterialTheme.additionalColors.black
+        ),
+        placeholder = {
+            Text(
+                text = stringResource(R.string.enter_industry),
+                color = MaterialTheme.additionalColors.placeHolder,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        },
+        shape = RoundedCornerShape(12.dp),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            cursorColor = MaterialTheme.additionalColors.cursor
+        ),
+        trailingIcon = {
+            val icon = if (textFieldState.text.isEmpty()) {
+                painterResource(R.drawable.search_24px)
+            } else {
+                painterResource(R.drawable.ic_clear)
+            }
+            IconButton(
+                onClick = {
+                    if (textFieldState.text.isNotEmpty()) {
+                        textFieldState.edit {
+                            replace(0, length, "")
                         }
                     }
                 }
+            ) {
+                Icon(
+                    painter = icon,
+                    contentDescription = "",
+                    tint = MaterialTheme.additionalColors.black
+                )
             }
         }
+    )
+}
 
-        if (state.selectedIndustryId != null) {
-            Spacer(modifier = Modifier.height(8.dp))
+@Composable
+private fun IndustryContentState(
+    state: IndustrySelectState,
+    onIndustrySelected: (Int) -> Unit
+) {
+    when {
+        state.isLoading -> {
+            IndustryLoadingState()
+        }
 
-            DefaultButton(
-                textResId = R.string.choose,
-                onClick = onConfirmClick,
-                backgroundColor = MaterialTheme.additionalColors.blue,
-                textColor = MaterialTheme.additionalColors.white,
-                modifier = Modifier
-                    .padding(bottom = 16.dp)
-                    .padding(horizontal = 16.dp)
+        state.error != null -> {
+            IndustryErrorState(error = state.error)
+        }
+
+        state.filteredIndustries.isEmpty() -> {
+            IndustryEmptyState(searchQuery = state.searchQuery)
+        }
+
+        else -> {
+            IndustryListState(
+                industries = state.filteredIndustries,
+                selectedIndustryId = state.selectedIndustryId,
+                onIndustrySelected = onIndustrySelected
             )
         }
+    }
+}
+
+@Composable
+private fun IndustryLoadingState() {
+    CircularIndicator()
+}
+
+@Composable
+private fun IndustryErrorState(error: String) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(16.dp)
+    ) {
+        Text(
+            text = "Ошибка: $error",
+            color = MaterialTheme.additionalColors.red
+        )
+    }
+}
+
+@Composable
+private fun IndustryEmptyState(searchQuery: String) {
+    Text(
+        text = if (searchQuery.isNotEmpty()) {
+            "Ничего не найдено"
+        } else {
+            "Список индустрий пуст"
+        },
+        modifier = Modifier.padding(16.dp)
+    )
+}
+
+@Composable
+private fun IndustryListState(
+    industries: List<IndustryItemUi>,
+    selectedIndustryId: Int?,
+    onIndustrySelected: (Int) -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        items(industries) { industry ->
+            IndustryRadioItem(
+                industry = industry,
+                isSelected = industry.id == selectedIndustryId,
+                onIndustrySelected = { onIndustrySelected(industry.id) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun IndustryConfirmButton(
+    selectedIndustryId: Int?,
+    onConfirmClick: () -> Unit
+) {
+    if (selectedIndustryId != null) {
+        Spacer(modifier = Modifier.height(8.dp))
+
+        DefaultButton(
+            textResId = R.string.choose,
+            onClick = onConfirmClick,
+            backgroundColor = MaterialTheme.additionalColors.blue,
+            textColor = MaterialTheme.additionalColors.white,
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .padding(horizontal = 16.dp)
+        )
     }
 }
 

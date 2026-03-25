@@ -33,6 +33,8 @@ fun FilterSelectionItem(
     onItemClick: () -> Unit,
     onClearClick: () -> Unit
 ) {
+    val isSelected = !selectedValue.isNullOrEmpty()
+
     Button(
         modifier = modifier.height(60.dp),
         onClick = onItemClick,
@@ -43,31 +45,10 @@ fun FilterSelectionItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(
-                modifier = Modifier
-                    .weight(Weight095, fill = false)
-            ) {
-                Text(
-                    text = title,
-                    style = if (selectedValue.isNullOrEmpty()) {
-                        MaterialTheme.typography.bodyMedium
-                    } else {
-                        MaterialTheme.typography.bodySmall
-                    },
-                    color = if (selectedValue.isNullOrEmpty()) {
-                        MaterialTheme.additionalColors.gray
-                    } else {
-                        MaterialTheme.colorScheme.onPrimary
-                    }
-                )
-                if (!selectedValue.isNullOrEmpty()) {
-                    Text(
-                        text = selectedValue,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+            Column(modifier = Modifier.weight(Weight095, fill = false)) {
+                FilterSelectionItemTitle(title, isSelected)
+                if (isSelected) {
+                    FilterSelectionItemValue(selectedValue!!)
                 }
             }
 
@@ -76,22 +57,30 @@ fun FilterSelectionItem(
             Icon(
                 modifier = modifier
                     .padding(end = 8.dp)
-                    .clickable {
-                        if (!selectedValue.isNullOrEmpty()) {
-                            onClearClick()
-                        } else {
-                            onItemClick()
-                        }
-                    },
-                painter = painterResource(
-                    if (!selectedValue.isNullOrEmpty()) {
-                        R.drawable.ic_clear
-                    } else {
-                        R.drawable.ic_button_arrow_right
-                    }
-                ),
+                    .clickable { if (isSelected) onClearClick() else onItemClick() },
+                painter = painterResource(if (isSelected) R.drawable.ic_clear else R.drawable.ic_button_arrow_right),
                 contentDescription = null
             )
         }
     }
+}
+
+@Composable
+private fun FilterSelectionItemTitle(title: String, isSelected: Boolean) {
+    Text(
+        text = title,
+        style = if (isSelected) MaterialTheme.typography.bodySmall else MaterialTheme.typography.bodyMedium,
+        color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.additionalColors.gray
+    )
+}
+
+@Composable
+private fun FilterSelectionItemValue(value: String) {
+    Text(
+        text = value,
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onPrimary,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis
+    )
 }

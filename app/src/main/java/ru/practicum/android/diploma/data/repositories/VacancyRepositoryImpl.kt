@@ -32,10 +32,9 @@ class VacancyRepositoryImpl(
                 perPage = perPage
             )
         )
-             emit(response(response))
+        emit(response(response))
 
     }.flowOn(Dispatchers.IO)
-
 
     private fun response(response: Response): Resource<VacancySearchResult> {
         return when (response.resultCode) {
@@ -44,27 +43,28 @@ class VacancyRepositoryImpl(
             else -> Resource.Error("Ошибка сервера", response.resultCode)
         }
     }
-        private fun successResponse(response: VacancySearchResponse): Resource<VacancySearchResult> {
-            return Resource.Success(
-                VacancySearchResult(
-                    vacancies = response.items.map { it.toDomain() },
-                    found = response.found,
-                    page = response.page,
-                    pages = response.pages
-                )
-            )
-        }
 
-        private fun VacancyDto.toDomain(): Vacancy {
-            return Vacancy(
-                id = id,
-                name = name,
-                employerName = employer?.name ?: "",
-                employerLogoUrl = employer?.logoUrls?.logo90,
-                areaName = area?.name ?: "",
-                salaryFrom = salary?.from,
-                salaryTo = salary?.to,
-                salaryCurrency = salary?.currency
+    private fun successResponse(response: VacancySearchResponse): Resource<VacancySearchResult> {
+        return Resource.Success(
+            VacancySearchResult(
+                vacancies = response.items.map { it.toDomain() },
+                found = response.found,
+                page = response.page,
+                pages = response.pages
             )
-        }
+        )
     }
+
+    private fun VacancyDto.toDomain(): Vacancy {
+        return Vacancy(
+            id = id,
+            name = name,
+            employerName = employer?.name ?: "",
+            employerLogoUrl = employer?.logoUrls?.logo90,
+            areaName = area?.name ?: "",
+            salaryFrom = salary?.from,
+            salaryTo = salary?.to,
+            salaryCurrency = salary?.currency
+        )
+    }
+}

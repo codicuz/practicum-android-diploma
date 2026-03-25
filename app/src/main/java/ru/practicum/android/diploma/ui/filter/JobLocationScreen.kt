@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavHostController
 import org.koin.androidx.compose.koinViewModel
 import ru.practicum.android.diploma.R
@@ -33,6 +34,7 @@ private const val KEY_REGION_ID = "selected_region_id"
 private const val KEY_REGION_NAME = "selected_region_name"
 private const val KEY_REGION_COUNTRY_ID = "region_country_id"
 private const val KEY_REGION_COUNTRY_NAME = "region_country_name"
+
 @Composable
 fun JobLocationScreen(
     navController: NavHostController,
@@ -42,77 +44,117 @@ fun JobLocationScreen(
     onJobRegionClick: (Int?) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
-    val backStackEntry = navController.currentBackStackEntry
-    val savedStateHandle = backStackEntry?.savedStateHandle
+    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
 
     LaunchedEffect(savedStateHandle) {
         savedStateHandle?.let { handle ->
-            val countryId = handle.get<Int>(KEY_COUNTRY_ID)
-            val countryName = handle.get<String>(KEY_COUNTRY_NAME)
-
-            if (countryId != null && countryName != null) {
-                viewModel.selectCountry(countryId, countryName)
-                handle.remove<Int>(KEY_COUNTRY_ID)
-                handle.remove<String>(KEY_COUNTRY_NAME)
-            }
-
-            val regionId = handle.get<Int>(KEY_REGION_ID)
-            val regionName = handle.get<String>(KEY_REGION_NAME)
-
-            if (regionId != null && regionName != null) {
-                val regionCountryId = handle.get<Int>(KEY_REGION_COUNTRY_ID)
-                val regionCountryName = handle.get<String>(KEY_REGION_COUNTRY_NAME)
-
-                if (regionCountryId != null && regionCountryName != null) {
-                    viewModel.selectCountry(regionCountryId, regionCountryName)
-                    handle.remove<Int>(KEY_REGION_COUNTRY_ID)
-                    handle.remove<String>(KEY_REGION_COUNTRY_NAME)
-                }
-
-                viewModel.selectRegion(regionId, regionName)
-                handle.remove<Int>(KEY_REGION_ID)
-                handle.remove<String>(KEY_REGION_NAME)
-            }
+            handleSavedStateChanges(handle, viewModel)
         }
     }
 
     fun onConfirmClick() {
-        navController.previousBackStackEntry?.savedStateHandle?.apply {
-            state.selectedCountryId?.let { set(KEY_COUNTRY_ID, it) }
-            state.selectedCountryName?.let { set(KEY_COUNTRY_NAME, it) }
-            state.selectedRegionId?.let { set(KEY_REGION_ID, it) }
-            state.selectedRegionName?.let { set(KEY_REGION_NAME, it) }
-        }
+        saveSelectedValuesToStateHandle(navController, state)
         navController.navigateUp()
     }
 
     JobLocationContent(
-        R.string.job_location_select,
+        title = R.string.job_location_select,
         modifier = Modifier,
         onNavigationClick = onNavigateBack,
         state = state,
         onJobCountryClick = onJobCountryClick,
         onJobCountryClear = {
             viewModel.clearCountry()
-            navController.previousBackStackEntry?.savedStateHandle?.apply {
-                set(KEY_COUNTRY_ID, null)
-                set(KEY_COUNTRY_NAME, null)
-                set(KEY_REGION_ID, null)
-                set(KEY_REGION_NAME, null)
-            }
+            clearCountryAndRegionFromStateHandle(navController)
         },
         onJobRegionClick = {
             onJobRegionClick(state.selectedCountryId)
         },
         onJobRegionClear = {
             viewModel.clearRegion()
-            navController.previousBackStackEntry?.savedStateHandle?.apply {
-                set(KEY_REGION_ID, null)
-                set(KEY_REGION_NAME, null)
-            }
+            clearRegionFromStateHandle(navController)
         },
         onConfirmClick = ::onConfirmClick
     )
+}
+
+private fun handleSavedStateChanges(
+    handle: SavedStateHandle,
+    viewModel: JobLocationViewModel
+) {
+    handleCountrySelection(handle, viewModel)
+    handleRegionSelection(handle, viewModel)
+}
+
+private fun handleCountrySelection(
+    handle: SavedStateHandle,
+    viewModel: JobLocationViewModel
+) {
+    val countryId = handle.get<Int>(KEY_COUNTRY_ID)
+    val countryName = handle.get<String>(KEY_COUNTRY_NAME)
+
+    if (countryId != null && countryName != null) {
+        viewModel.selectCountry(countryId, countryName)
+        handle.remove<Int>(KEY_COUNTRY_ID)
+        handle.remove<String>(KEY_COUNTRY_NAME)
+    }
+}
+
+private fun handleRegionSelection(
+    handle: SavedStateHandle,
+    viewModel: JobLocationViewModel
+) {
+    val regionId = handle.get<Int>(KEY_REGION_ID)
+    val regionName = handle.get<String>(KEY_REGION_NAME)
+
+    if (regionId != null && regionName != null) {
+        handleRegionCountry(handle, viewModel)
+        viewModel.selectRegion(regionId, regionName)
+        handle.remove<Int>(KEY_REGION_ID)
+        handle.remove<String>(KEY_REGION_NAME)
+    }
+}
+
+private fun handleRegionCountry(
+    handle: SavedStateHandle,
+    viewModel: JobLocationViewModel
+) {
+    val regionCountryId = handle.get<Int>(KEY_REGION_COUNTRY_ID)
+    val regionCountryName = handle.get<String>(KEY_REGION_COUNTRY_NAME)
+
+    if (regionCountryId != null && regionCountryName != null) {
+        viewModel.selectCountry(regionCountryId, regionCountryName)
+        handle.remove<Int>(KEY_REGION_COUNTRY_ID)
+        handle.remove<String>(KEY_REGION_COUNTRY_NAME)
+    }
+}
+
+private fun saveSelectedValuesToStateHandle(
+    navController: NavHostController,
+    state: JobLocationState
+) {
+    navController.previousBackStackEntry?.savedStateHandle?.apply {
+        state.selectedCountryId?.let { set(KEY_COUNTRY_ID, it) }
+        state.selectedCountryName?.let { set(KEY_COUNTRY_NAME, it) }
+        state.selectedRegionId?.let { set(KEY_REGION_ID, it) }
+        state.selectedRegionName?.let { set(KEY_REGION_NAME, it) }
+    }
+}
+
+private fun clearCountryAndRegionFromStateHandle(navController: NavHostController) {
+    navController.previousBackStackEntry?.savedStateHandle?.apply {
+        set(KEY_COUNTRY_ID, null)
+        set(KEY_COUNTRY_NAME, null)
+        set(KEY_REGION_ID, null)
+        set(KEY_REGION_NAME, null)
+    }
+}
+
+private fun clearRegionFromStateHandle(navController: NavHostController) {
+    navController.previousBackStackEntry?.savedStateHandle?.apply {
+        set(KEY_REGION_ID, null)
+        set(KEY_REGION_NAME, null)
+    }
 }
 
 @Composable
@@ -128,8 +170,7 @@ fun JobLocationContent(
     onConfirmClick: () -> Unit
 ) {
     Column(
-        modifier = modifier
-            .fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         SimpleTopBarTempl(
             modifier = modifier.padding(start = 4.dp),
@@ -153,8 +194,7 @@ fun JobLocationContent(
             onClearClick = onJobRegionClear
         )
 
-        val weight = 1f
-        Spacer(modifier = Modifier.weight(weight))
+        Spacer(modifier = Modifier.weight(1f))
 
         if (state.selectedCountryId != null) {
             Button(
@@ -165,13 +205,11 @@ fun JobLocationContent(
                 onClick = onConfirmClick,
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(MaterialTheme.additionalColors.blue)
-
             ) {
                 Text(
                     text = stringResource(R.string.choose),
                     color = MaterialTheme.additionalColors.white,
                     style = MaterialTheme.typography.bodyMedium
-
                 )
             }
             Spacer(modifier = Modifier.height(44.dp))

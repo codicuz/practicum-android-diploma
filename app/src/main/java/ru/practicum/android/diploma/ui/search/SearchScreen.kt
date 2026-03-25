@@ -250,7 +250,6 @@ private fun SearchBar(
     }
 }
 
-
 @Composable
 private fun DefaultPlaceholder() {
     BinocularMan()
@@ -272,6 +271,7 @@ private fun LoadingState() {
 }
 
 const val VisibleItemNumber = 5
+
 @Composable
 private fun ContentState(
     vacancies: List<Vacancy>,
@@ -343,6 +343,7 @@ private fun ContentState(
 private fun EmptyState() {
     NoVacancies()
 }
+
 @Composable
 private fun NoInternet() {
     NoInternetState()

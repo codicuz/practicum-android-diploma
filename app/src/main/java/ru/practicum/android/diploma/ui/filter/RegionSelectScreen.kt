@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -68,7 +69,6 @@ fun RegionSelectScreen(
         modifier = Modifier,
         regions = regions,
         isLoading = isLoading,
-
         onNavigationClick = onNavigateBack,
         onRegionSelected = { regionId, regionName ->
             navController.previousBackStackEntry?.savedStateHandle?.apply {
@@ -111,106 +111,156 @@ fun RegionSelectContent(
     }
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         SimpleTopBarTempl(
             modifier = modifier.padding(start = 4.dp),
             text = title,
             onNavigationClick = onNavigationClick
         )
-        TextField(
-            state = textFieldState,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .height(56.dp),
-            lineLimits = TextFieldLineLimits.SingleLine,
-            contentPadding = PaddingValues(start = 16.dp),
-            textStyle = MaterialTheme.typography.bodyMedium.copy(
-                color = MaterialTheme.additionalColors.black
-            ),
-            placeholder = {
-                Text(
-                    text = stringResource(R.string.enter_region),
-                    color = MaterialTheme.additionalColors.placeHolder,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            },
-            shape = RoundedCornerShape(12.dp),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                cursorColor = MaterialTheme.additionalColors.cursor
-            ),
-            trailingIcon = {
-                val icon = if (textFieldState.text.isEmpty()) {
-                    painterResource(R.drawable.search_24px)
-                } else {
-                    painterResource(R.drawable.ic_clear)
-                }
-                IconButton(
-                    onClick = {
-                        if (textFieldState.text.isNotEmpty()) {
-                            textFieldState.edit {
-                                replace(0, length, "")
-                            }
-                        }
-                    }
-                ) {
-                    Icon(
-                        painter = icon,
-                        contentDescription = "",
-                        tint = MaterialTheme.additionalColors.black
-                    )
-                }
-            }
+
+        RegionSearchTextField(
+            textFieldState = textFieldState
         )
+
         Spacer(modifier = Modifier.height(16.dp))
-        when {
-            isLoading -> {
-                CircularIndicator()
-            }
 
-            filteredRegions.isEmpty() -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = if (textFieldState.text.isNotEmpty()) {
-                            "Ничего не найдено"
-                        } else {
-                            "Список регионов пуст"
-                        }
-                    )
-                }
-            }
+        RegionContentState(
+            isLoading = isLoading,
+            filteredRegions = filteredRegions,
+            searchQuery = textFieldState.text.toString(),
+            onRegionSelected = onRegionSelected
+        )
+    }
+}
 
-            else -> {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                ) {
-                    items(filteredRegions) { region ->
-                        Button(
-                            onClick = {
-                                onRegionSelected(region.id, region.name)
-                            }
-                        ) {
-                            val weight = 1f
-                            Text(region.name)
-                            Spacer(modifier = Modifier.weight(weight))
-                            Icon(
-                                painter = painterResource(R.drawable.ic_button_arrow_right),
-                                contentDescription = null
-                            )
+@Composable
+private fun RegionSearchTextField(
+    textFieldState: TextFieldState
+) {
+    TextField(
+        state = textFieldState,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .height(56.dp),
+        lineLimits = TextFieldLineLimits.SingleLine,
+        contentPadding = PaddingValues(start = 16.dp),
+        textStyle = MaterialTheme.typography.bodyMedium.copy(
+            color = MaterialTheme.additionalColors.black
+        ),
+        placeholder = {
+            Text(
+                text = stringResource(R.string.enter_region),
+                color = MaterialTheme.additionalColors.placeHolder,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        },
+        shape = RoundedCornerShape(12.dp),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            cursorColor = MaterialTheme.additionalColors.cursor
+        ),
+        trailingIcon = {
+            val icon = if (textFieldState.text.isEmpty()) {
+                painterResource(R.drawable.search_24px)
+            } else {
+                painterResource(R.drawable.ic_clear)
+            }
+            IconButton(
+                onClick = {
+                    if (textFieldState.text.isNotEmpty()) {
+                        textFieldState.edit {
+                            replace(0, length, "")
                         }
                     }
                 }
+            ) {
+                Icon(
+                    painter = icon,
+                    contentDescription = "",
+                    tint = MaterialTheme.additionalColors.black
+                )
             }
         }
+    )
+}
+
+@Composable
+private fun RegionContentState(
+    isLoading: Boolean,
+    filteredRegions: List<RegionItemUi>,
+    searchQuery: String,
+    onRegionSelected: (Int, String) -> Unit
+) {
+    when {
+        isLoading -> {
+            CircularIndicator()
+        }
+
+        filteredRegions.isEmpty() -> {
+            RegionEmptyState(searchQuery = searchQuery)
+        }
+
+        else -> {
+            RegionListState(
+                regions = filteredRegions,
+                onRegionSelected = onRegionSelected
+            )
+        }
+    }
+}
+
+@Composable
+private fun RegionEmptyState(searchQuery: String) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = if (searchQuery.isNotEmpty()) {
+                "Ничего не найдено"
+            } else {
+                "Список регионов пуст"
+            }
+        )
+    }
+}
+
+@Composable
+private fun RegionListState(
+    regions: List<RegionItemUi>,
+    onRegionSelected: (Int, String) -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        items(regions) { region ->
+            RegionItem(
+                region = region,
+                onClick = { onRegionSelected(region.id, region.name) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun RegionItem(
+    region: RegionItemUi,
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = onClick
+    ) {
+        val weight = 1f
+        Text(region.name)
+        Spacer(modifier = Modifier.weight(weight))
+        Icon(
+            painter = painterResource(R.drawable.ic_button_arrow_right),
+            contentDescription = null
+        )
     }
 }
