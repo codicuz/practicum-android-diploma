@@ -157,6 +157,8 @@ fun SearchContent(
             }
         }
 
+        Spacer(modifier = Modifier.height(16.dp))
+
         SearchBar(
             query = searchQuery,
             onQueryChanged = onQueryChanged,
