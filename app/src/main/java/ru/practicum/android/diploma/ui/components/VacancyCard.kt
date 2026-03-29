@@ -31,6 +31,18 @@ fun VacancyItem(
     vacancy: Vacancy,
     onClick: () -> Unit
 ) {
+    VacancyCardContent(
+        vacancy = vacancy,
+        onClick = onClick
+
+    )
+}
+
+@Composable
+fun VacancyCardContent(
+    vacancy: Vacancy,
+    onClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
