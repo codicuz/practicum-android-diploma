@@ -283,6 +283,13 @@ private fun ContentState(
     onLoadNextPage: () -> Unit
 ) {
     val listState = rememberLazyListState()
+    val focusManager = LocalFocusManager.current
+
+    LaunchedEffect(listState.isScrollInProgress) {
+        if (listState.isScrollInProgress) {
+            focusManager.clearFocus()
+        }
+    }
 
     val shouldLoadMore by remember {
         derivedStateOf {
@@ -299,12 +306,7 @@ private fun ContentState(
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        Text(
-            text = stringResource(R.string.search_found_vacancies, found),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onPrimary,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
+        FoundCounter(found = found)
 
         LazyColumn(
             state = listState,
@@ -342,8 +344,50 @@ private fun ContentState(
 }
 
 @Composable
+private fun FoundCounter(found: Int) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(R.string.search_found_vacancies, found),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.additionalColors.white,
+            modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .background(MaterialTheme.additionalColors.blue)
+                .padding(horizontal = 16.dp, vertical = 6.dp)
+        )
+    }
+}
+
+@Composable
 private fun EmptyState() {
-    NoVacancies()
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = stringResource(R.string.search_empty_result),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.additionalColors.white,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.additionalColors.blue)
+                    .padding(horizontal = 16.dp, vertical = 6.dp)
+            )
+        }
+
+        NoVacancies()
+    }
 }
 
 @Composable

@@ -1,6 +1,5 @@
 package ru.practicum.android.diploma.ui.filter
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -58,10 +57,6 @@ fun RegionSelectScreen(
 
     LaunchedEffect(effectiveCountryId) {
         viewModel.loadRegions(effectiveCountryId)
-
-        if (effectiveCountryId != null) {
-            Log.d("RegionSelectScreen", "Loading regions for countryId: $effectiveCountryId")
-        }
     }
 
     RegionSelectContent(

@@ -9,11 +9,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import ru.practicum.android.diploma.data.network.NO_INTERNET_CODE
 import ru.practicum.android.diploma.domain.api.VacancyInteractor
 import ru.practicum.android.diploma.domain.models.Vacancy
 import ru.practicum.android.diploma.domain.models.VacancySearchResult
 import ru.practicum.android.diploma.util.Constants
+import ru.practicum.android.diploma.util.Constants.NO_INTERNET_CODE
 import ru.practicum.android.diploma.util.Resource
 import ru.practicum.android.diploma.util.debounce
 

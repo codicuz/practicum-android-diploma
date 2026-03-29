@@ -5,13 +5,14 @@ import ru.practicum.android.diploma.data.dto.AreasResponse
 import ru.practicum.android.diploma.data.dto.IndustriesRequest
 import ru.practicum.android.diploma.data.dto.IndustriesResponse
 import ru.practicum.android.diploma.data.dto.Response
-
-const val ResultCode400 = 400
-const val NO_INTERNET_CODE = -1
+import ru.practicum.android.diploma.data.dto.VacancyDetailRequest
+import ru.practicum.android.diploma.data.dto.VacancyDetailResponse
+import ru.practicum.android.diploma.data.dto.VacancySearchRequest
+import ru.practicum.android.diploma.util.Constants.HTTP_BAD_REQUEST
 
 class RetrofitNetworkClient(private val apiService: ApiService) : NetworkClient {
     override suspend fun doRequest(dto: Any): Response {
-        return when (dto) {
+        val response = when (dto) {
             is AreasRequest -> ResponseFactory.create(
                 apiCall = { apiService.getAreas() },
                 responseCreator = { AreasResponse(it) }
@@ -22,7 +23,29 @@ class RetrofitNetworkClient(private val apiService: ApiService) : NetworkClient 
                 responseCreator = { IndustriesResponse(it) }
             )
 
-            else -> Response().apply { resultCode = ResultCode400 }
+            is VacancySearchRequest -> {
+                val options = buildSearchOptions(dto)
+                ResponseFactory.create(
+                    apiCall = { apiService.searchVacancies(options) },
+                    responseCreator = { it }
+                )
+            }
+
+            is VacancyDetailRequest -> ResponseFactory.create(
+                apiCall = { apiService.getVacancyById(dto.id) },
+                responseCreator = { VacancyDetailResponse(it) }
+            )
+
+            else -> Response().apply { resultCode = HTTP_BAD_REQUEST }
         }
+        return response
+    }
+
+    private fun buildSearchOptions(request: VacancySearchRequest): Map<String, String> {
+        val options = mutableMapOf<String, String>()
+        options["text"] = request.text
+        options["page"] = request.page.toString()
+        options["per_page"] = request.perPage.toString()
+        return options
     }
 }
