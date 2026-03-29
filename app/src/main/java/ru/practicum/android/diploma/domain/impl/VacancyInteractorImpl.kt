@@ -3,6 +3,7 @@ package ru.practicum.android.diploma.domain.impl
 import kotlinx.coroutines.flow.Flow
 import ru.practicum.android.diploma.domain.api.VacancyInteractor
 import ru.practicum.android.diploma.domain.api.VacancyRepository
+import ru.practicum.android.diploma.domain.models.VacancyDetail
 import ru.practicum.android.diploma.domain.models.VacancySearchResult
 import ru.practicum.android.diploma.util.Resource
 
@@ -15,5 +16,9 @@ class VacancyInteractorImpl(
         perPage: Int
     ): Flow<Resource<VacancySearchResult>> {
         return repository.searchVacancies(query, page, perPage)
+    }
+
+    override fun getVacancyById(id: String): Flow<Resource<VacancyDetail>> {
+        return repository.getVacancyById(id)
     }
 }

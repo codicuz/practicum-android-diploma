@@ -5,14 +5,14 @@ import ru.practicum.android.diploma.data.dto.AreasRequest
 import ru.practicum.android.diploma.data.dto.AreasResponse
 import ru.practicum.android.diploma.data.network.NetworkClient
 import ru.practicum.android.diploma.domain.models.AreasRepository
+import ru.practicum.android.diploma.util.Constants.HTTP_OK
 
-const val ReturnCode200 = 200
 class AreasRepositoryImpl(private val networkClient: NetworkClient) : AreasRepository {
     override suspend fun getAreas(): Result<List<Areas>> {
         val response = networkClient.doRequest(AreasRequest())
 
         return when (response.resultCode) {
-            ReturnCode200 -> {
+            HTTP_OK -> {
                 val areasResponse = response as? AreasResponse
                 if (areasResponse != null) {
                     Result.success(areasResponse.results)
