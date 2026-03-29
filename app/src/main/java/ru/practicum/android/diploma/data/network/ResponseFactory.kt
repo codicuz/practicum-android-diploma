@@ -12,7 +12,7 @@ object ResponseFactory {
         return try {
             val result = apiCall()
             responseCreator(result).apply { resultCode = HTTP_OK }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Response().apply { resultCode = HTTP_INTERNAL_SERVER_ERROR }
         }
     }

@@ -304,7 +304,6 @@ private fun ContentState(
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-
         FoundCounter(found = found)
 
         LazyColumn(

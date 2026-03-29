@@ -10,7 +10,6 @@ import ru.practicum.android.diploma.data.dto.VacancyDetailResponse
 import ru.practicum.android.diploma.data.dto.VacancySearchRequest
 import ru.practicum.android.diploma.util.Constants.HTTP_BAD_REQUEST
 
-
 class RetrofitNetworkClient(private val apiService: ApiService) : NetworkClient {
     override suspend fun doRequest(dto: Any): Response {
         val response = when (dto) {

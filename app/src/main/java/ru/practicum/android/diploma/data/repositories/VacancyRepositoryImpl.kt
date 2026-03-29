@@ -70,6 +70,7 @@ class VacancyRepositoryImpl(
             salaryCurrency = salary?.currency
         )
     }
+
     override fun getVacancyById(id: String): Flow<Resource<VacancyDetail>> = flow {
         val response = networkClient.doRequest(VacancyDetailRequest(id = id))
         emit(mapDetailResponse(response))
@@ -110,4 +111,3 @@ class VacancyRepositoryImpl(
         )
     }
 }
-
