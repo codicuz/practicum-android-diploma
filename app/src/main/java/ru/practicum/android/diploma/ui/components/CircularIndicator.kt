@@ -11,8 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
-// import ru.practicum.android.diploma.ui.theme.additionalColors
-
 @Composable
 fun CircularIndicator(modifier: Modifier = Modifier) {
     Column(
@@ -23,7 +21,6 @@ fun CircularIndicator(modifier: Modifier = Modifier) {
     ) {
         CircularProgressIndicator(
             modifier = Modifier.size(36.dp),
-//            color = MaterialTheme.additionalColors.blue,
             trackColor = Color.Transparent,
         )
     }

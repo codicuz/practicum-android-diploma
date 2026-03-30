@@ -13,9 +13,13 @@ class VacancyInteractorImpl(
     override fun searchVacancies(
         query: String,
         page: Int,
-        perPage: Int
+        perPage: Int,
+        salary: Int?,
+        onlyWithSalary: Boolean,
+        industry: Int?,
+        area: Int?
     ): Flow<Resource<VacancySearchResult>> {
-        return repository.searchVacancies(query, page, perPage)
+        return repository.searchVacancies(query, page, perPage, salary, onlyWithSalary, industry, area)
     }
 
     override fun getVacancyById(id: String): Flow<Resource<VacancyDetail>> {

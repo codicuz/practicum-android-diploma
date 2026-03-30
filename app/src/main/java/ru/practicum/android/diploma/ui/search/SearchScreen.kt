@@ -55,7 +55,6 @@ import ru.practicum.android.diploma.ui.components.ErrorState
 import ru.practicum.android.diploma.ui.components.NoInternetState
 import ru.practicum.android.diploma.ui.components.NoVacancies
 import ru.practicum.android.diploma.ui.components.VacancyItem
-import ru.practicum.android.diploma.ui.components.formatSalary
 import ru.practicum.android.diploma.ui.theme.additionalColors
 
 @Composable
@@ -67,13 +66,19 @@ fun SearchScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+    val filterState by filterViewModel.state.collectAsState()
     val context = LocalContext.current
 
     val noInternetMessage = stringResource(R.string.toast_no_internet)
     val errorMessage = stringResource(R.string.toast_error)
 
-    val filterState by filterViewModel.state.collectAsState()
     val hasActiveFilters = filterState.hasActiveFilters()
+
+    LaunchedEffect(filterState) {
+        if (searchQuery.isNotBlank()) {
+            viewModel.refreshSearchWithFilters()
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.toastEvent.collect { event ->
@@ -156,6 +161,8 @@ fun SearchContent(
                 }
             }
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         SearchBar(
             query = searchQuery,
@@ -404,5 +411,4 @@ private fun VacancyCard(vacancy: Vacancy, onClick: () -> Unit) {
         vacancy = vacancy,
         onClick = onClick
     )
-    formatSalary(vacancy = vacancy)
 }
