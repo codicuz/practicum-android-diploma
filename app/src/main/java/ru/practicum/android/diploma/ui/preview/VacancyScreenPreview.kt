@@ -2,12 +2,15 @@ package ru.practicum.android.diploma.ui.preview
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import ru.practicum.android.diploma.ui.vacancy.VacancyContent
+import ru.practicum.android.diploma.ui.vacancy.VacancyScreen
 
 @Preview
 @Composable
-fun VacancyScreenPreview() {
+fun VacancyScreenPreviewLight() {
     DefaultPreviewContainer {
-        VacancyContent()
+        VacancyScreen(
+            vacancyId = "123",
+            onNavigateBack = {}
+        )
     }
 }
