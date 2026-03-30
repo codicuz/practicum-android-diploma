@@ -38,6 +38,7 @@ import ru.practicum.android.diploma.domain.models.RegionItemUi
 import ru.practicum.android.diploma.presentation.filter.JobLocationViewModel
 import ru.practicum.android.diploma.ui.components.CircularIndicator
 import ru.practicum.android.diploma.ui.components.ErrorRegion
+import ru.practicum.android.diploma.ui.components.NoInternetState
 import ru.practicum.android.diploma.ui.components.SimpleTopBarTempl
 import ru.practicum.android.diploma.ui.components.UnknownRegion
 import ru.practicum.android.diploma.ui.theme.additionalColors
@@ -53,6 +54,7 @@ fun RegionSelectScreen(
     val regions by viewModel.regions.collectAsState()
     val isLoading by viewModel.isRegionsLoading.collectAsState()
     val regionsError by viewModel.regionsError.collectAsState()
+    val isNoInternet by viewModel.isNoInternet.collectAsState()
     val initialCountryId = remember { countryId }
     val effectiveCountryId = initialCountryId ?: countryId
 
@@ -66,6 +68,7 @@ fun RegionSelectScreen(
         regions = regions,
         isLoading = isLoading,
         error = regionsError,
+        isNoInternet = isNoInternet,
         onNavigationClick = onNavigateBack,
         onRegionSelected = { regionId, regionName ->
             navController.previousBackStackEntry?.savedStateHandle?.apply {
@@ -92,6 +95,7 @@ fun RegionSelectContent(
     onNavigationClick: () -> Unit,
     isLoading: Boolean,
     error: String? = null,
+    isNoInternet: Boolean = false,
     onRegionSelected: (Int, String) -> Unit
 ) {
     val textFieldState = rememberTextFieldState()
@@ -126,6 +130,7 @@ fun RegionSelectContent(
         RegionContentState(
             isLoading = isLoading,
             error = error,
+            isNoInternet = isNoInternet,
             filteredRegions = filteredRegions,
             searchQuery = textFieldState.text.toString(),
             onRegionSelected = onRegionSelected
@@ -192,6 +197,7 @@ private fun RegionSearchTextField(
 private fun RegionContentState(
     isLoading: Boolean,
     error: String?,
+    isNoInternet: Boolean,
     filteredRegions: List<RegionItemUi>,
     searchQuery: String,
     onRegionSelected: (Int, String) -> Unit
@@ -200,11 +206,12 @@ private fun RegionContentState(
         isLoading -> {
             CircularIndicator()
         }
-
+        isNoInternet -> {
+            NoInternetState()
+        }
         error != null -> {
             ErrorRegion()
         }
-
         filteredRegions.isEmpty() -> {
             if (searchQuery.isNotEmpty()) {
                 UnknownRegion()
@@ -212,7 +219,6 @@ private fun RegionContentState(
                 ErrorRegion()
             }
         }
-
         else -> {
             RegionListState(
                 regions = filteredRegions,

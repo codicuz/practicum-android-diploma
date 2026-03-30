@@ -16,15 +16,21 @@ import ru.practicum.android.diploma.presentation.filter.FilterState
 import ru.practicum.android.diploma.presentation.filter.FilterViewModel
 import ru.practicum.android.diploma.util.Constants
 import ru.practicum.android.diploma.util.Constants.NO_INTERNET_CODE
+import ru.practicum.android.diploma.util.NetworkConnectivityChecker
 import ru.practicum.android.diploma.util.Resource
 import ru.practicum.android.diploma.util.debounce
 
+@Suppress("LargeClass")
 class SearchViewModel(
     private val vacancyInteractor: VacancyInteractor,
-    private val filterViewModel: FilterViewModel
+    private val filterViewModel: FilterViewModel,
+    private val networkChecker: NetworkConnectivityChecker
 ) : ViewModel() {
 
     private var currentFilters = FilterState.DEFAULT
+
+    private val _isNoInternet = MutableStateFlow(false)
+    val isNoInternet: StateFlow<Boolean> = _isNoInternet.asStateFlow()
 
     private val _state = MutableStateFlow<SearchScreenState>(SearchScreenState.Default)
     val state: StateFlow<SearchScreenState> = _state.asStateFlow()
@@ -56,6 +62,13 @@ class SearchViewModel(
     }
 
     private fun restartSearch() {
+        if (!networkChecker.isConnected()) {
+            _isNoInternet.value = true
+            _state.value = SearchScreenState.NoInternet
+            return
+        }
+
+        _isNoInternet.value = false
         currentVacancies.clear()
         currentPage = 0
         maxPages = 0
@@ -99,6 +112,15 @@ class SearchViewModel(
 
     fun onLoadNextPage() {
         if (!canLoadNextPage()) return
+
+        if (!networkChecker.isConnected()) {
+            _isNoInternet.value = true
+            viewModelScope.launch {
+                _toastEvent.emit(SearchToastEvent.NO_INTERNET)
+            }
+            return
+        }
+
         startNextPageLoading()
         viewModelScope.launch {
             vacancyInteractor.searchVacancies(
@@ -128,18 +150,24 @@ class SearchViewModel(
 
     private fun searchRequest(query: String) {
         viewModelScope.launch {
-            currentPage = 0
-            currentVacancies.clear()
-            vacancyInteractor.searchVacancies(
-                query = query,
-                page = currentPage + 1,
-                perPage = Constants.ITEMS_PER_PAGE,
-                salary = currentFilters.salary.toIntOrNull(),
-                onlyWithSalary = currentFilters.isWithoutSalayrHidden,
-                industry = currentFilters.selectedIndustryId,
-                area = getAreaId()
-            ).collect { result ->
-                handleSearchResult(result)
+            if (!networkChecker.isConnected()) {
+                _isNoInternet.value = true
+                _state.value = SearchScreenState.NoInternet
+            } else {
+                _isNoInternet.value = false
+                currentPage = 0
+                currentVacancies.clear()
+                vacancyInteractor.searchVacancies(
+                    query = query,
+                    page = currentPage + 1,
+                    perPage = Constants.ITEMS_PER_PAGE,
+                    salary = currentFilters.salary.toIntOrNull(),
+                    onlyWithSalary = currentFilters.isWithoutSalayrHidden,
+                    industry = currentFilters.selectedIndustryId,
+                    area = getAreaId()
+                ).collect { result ->
+                    handleSearchResult(result)
+                }
             }
         }
     }

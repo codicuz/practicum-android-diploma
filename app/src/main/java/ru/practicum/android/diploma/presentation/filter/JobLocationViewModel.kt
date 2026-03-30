@@ -10,9 +10,11 @@ import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.domain.models.CountryItemUi
 import ru.practicum.android.diploma.domain.models.RegionItemUi
 import ru.practicum.android.diploma.domain.usecases.GetAreasUseCase
+import ru.practicum.android.diploma.util.NetworkConnectivityChecker
 
 class JobLocationViewModel(
-    private val getAreasUseCase: GetAreasUseCase
+    private val getAreasUseCase: GetAreasUseCase,
+    private val networkChecker: NetworkConnectivityChecker
 ) : ViewModel() {
     private val _state = MutableStateFlow(JobLocationState())
     val state: StateFlow<JobLocationState> = _state.asStateFlow()
@@ -32,47 +34,67 @@ class JobLocationViewModel(
     private val _regionsError = MutableStateFlow<String?>(null)
     val regionsError: StateFlow<String?> = _regionsError.asStateFlow()
 
+    private val _isNoInternet = MutableStateFlow(false)
+    val isNoInternet: StateFlow<Boolean> = _isNoInternet.asStateFlow()
+
     fun loadAreas() {
         viewModelScope.launch {
-            _isCountriesLoading.value = true
-            _state.update { it.copy(isLoading = true, error = null) }
+            if (!networkChecker.isConnected()) {
+                _isNoInternet.value = true
+                _isCountriesLoading.value = false
+            } else {
+                _isNoInternet.value = false
+                _isCountriesLoading.value = true
+                _state.update { it.copy(isLoading = true, error = null) }
 
-            val result = getAreasUseCase()
+                val result = getAreasUseCase()
 
-            result.onSuccess { areas ->
-                _areas.value = areas.map { country ->
-                    CountryItemUi(
-                        id = country.id,
-                        name = country.name,
-                        regions = country.areas.map { region ->
-                            RegionItemUi(
-                                id = region.id,
-                                parentId = region.parentId,
-                                name = region.name
-                            )
-                        },
-                    )
+                result.onSuccess { areas ->
+                    _areas.value = areas.map { country ->
+                        CountryItemUi(
+                            id = country.id,
+                            name = country.name,
+                            regions = country.areas.map { region ->
+                                RegionItemUi(
+                                    id = region.id,
+                                    parentId = region.parentId,
+                                    name = region.name
+                                )
+                            },
+                        )
+                    }
+
+                    _state.update { it.copy(isLoading = false) }
+
+                }.onFailure { error ->
+                    val isNoInternet = error.message?.contains("Unable to resolve host") == true ||
+                        error.message?.contains("Failed to connect") == true ||
+                        error.message?.contains("timeout") == true
+                    _isNoInternet.value = isNoInternet
+                    _state.update { it.copy(isLoading = false, error = error.message ?: "Unknown error") }
                 }
-
-                _state.update { it.copy(isLoading = false) }
-
-            }.onFailure { error ->
-                _state.update { it.copy(isLoading = false, error = error.message ?: "Unknown error") }
+                _isCountriesLoading.value = false
             }
-            _isCountriesLoading.value = false
         }
     }
 
     fun loadRegions(countryId: Int? = null) {
         viewModelScope.launch {
-            _isRegionsLoading.value = true
-            _regionsError.value = null
-
-            if (_areas.value.isEmpty()) {
-                loadAreasAndThenRegions(countryId)
-            } else {
-                updateRegionsList(countryId)
+            if (!networkChecker.isConnected()) {
+                _isNoInternet.value = true
                 _isRegionsLoading.value = false
+            } else {
+                _isNoInternet.value = false
+                _isRegionsLoading.value = true
+                _regionsError.value = null
+                _isNoInternet.value = false
+
+                if (_areas.value.isEmpty()) {
+                    loadAreasAndThenRegions(countryId)
+                } else {
+                    updateRegionsList(countryId)
+                    _isRegionsLoading.value = false
+                }
             }
         }
     }
@@ -95,8 +117,11 @@ class JobLocationViewModel(
                 )
             }
             updateRegionsList(countryId)
-
         }.onFailure { error ->
+            val isNoInternet = error.message?.contains("Unable to resolve host") == true ||
+                error.message?.contains("Failed to connect") == true ||
+                error.message?.contains("timeout") == true
+            _isNoInternet.value = isNoInternet
             _regionsError.value = error.message ?: "Unknown error"
             _regions.value = emptyList()
         }
