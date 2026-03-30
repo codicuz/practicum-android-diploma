@@ -18,7 +18,6 @@ val mockVacancy = Vacancy(
 
 @Composable
 private fun ScreenPreview() {
-
     VacancyCardContent(
         vacancy = mockVacancy,
         onClick = {}

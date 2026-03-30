@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.ui.components
 
+import android.icu.text.DecimalFormat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -157,11 +158,35 @@ fun formatSalary(vacancy: Vacancy): String {
     val currency = getCurrencySymbol(vacancy.salaryCurrency)
 
     return when {
-        from != null && to != null -> stringResource(R.string.salary_from_to, from, to, currency)
-        from != null -> stringResource(R.string.salary_from, from, currency)
-        to != null -> stringResource(R.string.salary_to, to, currency)
+        from != null && to != null -> stringResource(
+            R.string.salary_from_to,
+            formatNumberWithSpaces(from),
+            formatNumberWithSpaces(to),
+            currency
+        )
+
+        from != null -> stringResource(
+            R.string.salary_from,
+            formatNumberWithSpaces(from),
+            currency
+        )
+
+        to != null -> stringResource(
+            R.string.salary_to,
+            formatNumberWithSpaces(to),
+            currency
+        )
+
         else -> stringResource(R.string.salary_not_specified)
     }
+}
+
+const val GrpSize = 3
+fun formatNumberWithSpaces(number: Int): String {
+    val formatter = DecimalFormat("#,###").apply {
+        groupingSize = GrpSize
+    }
+    return formatter.format(number).replace(',', ' ')
 }
 
 fun getCurrencySymbol(currency: String?): String {

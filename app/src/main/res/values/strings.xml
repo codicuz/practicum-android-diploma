@@ -36,9 +36,9 @@
     <string name="reset">Сбросить</string>
 
     <!-- Salary -->
-    <string name="salary_from_to">от %1$d до %2$d %3$s</string>
-    <string name="salary_from">от %1$d %2$s</string>
-    <string name="salary_to">до %1$d %2$s</string>
+    <string name="salary_from_to">от %1$s до %2$s %3$s</string>
+    <string name="salary_from">от %1$s %2$s</string>
+    <string name="salary_to">до %1$s %2$s</string>
     <string name="salary_not_specified">Зарплата не указана</string>
 
     <string name="toast_no_internet">Проверьте подключение к интернету</string>

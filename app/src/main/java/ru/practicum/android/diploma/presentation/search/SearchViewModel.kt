@@ -12,14 +12,19 @@ import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.domain.api.VacancyInteractor
 import ru.practicum.android.diploma.domain.models.Vacancy
 import ru.practicum.android.diploma.domain.models.VacancySearchResult
+import ru.practicum.android.diploma.presentation.filter.FilterState
+import ru.practicum.android.diploma.presentation.filter.FilterViewModel
 import ru.practicum.android.diploma.util.Constants
 import ru.practicum.android.diploma.util.Constants.NO_INTERNET_CODE
 import ru.practicum.android.diploma.util.Resource
 import ru.practicum.android.diploma.util.debounce
 
 class SearchViewModel(
-    private val vacancyInteractor: VacancyInteractor
+    private val vacancyInteractor: VacancyInteractor,
+    private val filterViewModel: FilterViewModel
 ) : ViewModel() {
+
+    private var currentFilters = FilterState.DEFAULT
 
     private val _state = MutableStateFlow<SearchScreenState>(SearchScreenState.Default)
     val state: StateFlow<SearchScreenState> = _state.asStateFlow()
@@ -34,6 +39,33 @@ class SearchViewModel(
     private var maxPages = 0
     private var currentVacancies = mutableListOf<Vacancy>()
     private var isNextPageLoading = false
+
+    init {
+        viewModelScope.launch {
+            filterViewModel.state.collect { filterState ->
+                currentFilters = filterState
+            }
+        }
+    }
+
+    fun applyFiltersAndSearch() {
+        val currentQuery = _searchQuery.value
+        if (currentQuery.isNotBlank()) {
+            restartSearch()
+        }
+    }
+
+    private fun restartSearch() {
+        currentVacancies.clear()
+        currentPage = 0
+        maxPages = 0
+        _state.value = SearchScreenState.Loading
+        searchRequest(_searchQuery.value)
+    }
+
+    private fun getAreaId(): Int? {
+        return currentFilters.selectedRegionId ?: currentFilters.selectedCountryId
+    }
 
     private val searchDebounce = debounce<String>(
         delayMillis = Constants.SEARCH_DEBOUNCE_DELAY_MILLIS,
@@ -72,10 +104,25 @@ class SearchViewModel(
             vacancyInteractor.searchVacancies(
                 query = _searchQuery.value,
                 page = currentPage + 1,
-                perPage = Constants.ITEMS_PER_PAGE
+                perPage = Constants.ITEMS_PER_PAGE,
+                salary = currentFilters.salary.toIntOrNull(),
+                onlyWithSalary = currentFilters.isWithoutSalayrHidden,
+                industry = currentFilters.selectedIndustryId,
+                area = getAreaId()
             ).collect { result ->
                 handleNextPageResult(result)
             }
+        }
+    }
+
+    fun refreshSearchWithFilters() {
+        val currentQuery = _searchQuery.value
+        if (currentQuery.isNotBlank()) {
+            currentVacancies.clear()
+            currentPage = 0
+            maxPages = 0
+            _state.value = SearchScreenState.Loading
+            searchRequest(currentQuery)
         }
     }
 
@@ -86,7 +133,11 @@ class SearchViewModel(
             vacancyInteractor.searchVacancies(
                 query = query,
                 page = currentPage + 1,
-                perPage = Constants.ITEMS_PER_PAGE
+                perPage = Constants.ITEMS_PER_PAGE,
+                salary = currentFilters.salary.toIntOrNull(),
+                onlyWithSalary = currentFilters.isWithoutSalayrHidden,
+                industry = currentFilters.selectedIndustryId,
+                area = getAreaId()
             ).collect { result ->
                 handleSearchResult(result)
             }
