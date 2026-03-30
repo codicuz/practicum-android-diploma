@@ -16,7 +16,11 @@ data class VacancyDetail(
     val address: String?,
     val contactName: String?,
     val contactEmail: String?,
-    val contactPhones: List<String>?,
+    val contactPhones: List<PhoneInfo>,
     val skills: List<String>,
     val url: String?
+)
+data class PhoneInfo(
+    val formatted: String,
+    val comment: String?
 )

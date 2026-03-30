@@ -16,4 +16,9 @@ sealed class Screen(
     object IndustrySelect : Screen("industry_select")
     object CountrySelect : Screen("country_select")
     object RegionSelect : Screen("region_select")
+    object VacancyDetail : Screen("vacancy_detail/{vacancyId}") {
+        fun createRoute(vacancyId: String): String = "vacancy_detail/$vacancyId"
+    }
 }
+
+

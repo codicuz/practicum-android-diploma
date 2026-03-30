@@ -1,5 +1,7 @@
 package ru.practicum.android.diploma.data.dto
 
+import com.google.gson.annotations.SerializedName
+
 data class VacancyDto(
     val id: String,
     val name: String,
@@ -26,7 +28,7 @@ data class SalaryDto(
 data class EmployerDto(
     val id: String,
     val name: String,
-    val logo: String
+    val logo: String?
 )
 
 data class AreaDto(
@@ -38,6 +40,7 @@ data class AddressDto(
     val city: String?,
     val street: String?,
     val building: String?,
+    @SerializedName("raw")
     val fullAddress: String?
 )
 
@@ -60,10 +63,15 @@ data class ContactsDto(
     val id: String?,
     val name: String?,
     val email: String?,
-    val phone: List<String>?
+    val phone: List<PhoneDto>?
 )
 
 data class IndustryRefDto(
     val id: Int?,
     val name: String?
+)
+
+data class PhoneDto(
+    val comment: String?,
+    val formatted: String?
 )
