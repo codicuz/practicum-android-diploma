@@ -29,6 +29,9 @@ class JobLocationViewModel(
     private val _isCountriesLoading = MutableStateFlow(false)
     val isCountriesLoading: StateFlow<Boolean> = _isCountriesLoading.asStateFlow()
 
+    private val _regionsError = MutableStateFlow<String?>(null)
+    val regionsError: StateFlow<String?> = _regionsError.asStateFlow()
+
     fun loadAreas() {
         viewModelScope.launch {
             _isCountriesLoading.value = true
@@ -63,6 +66,7 @@ class JobLocationViewModel(
     fun loadRegions(countryId: Int? = null) {
         viewModelScope.launch {
             _isRegionsLoading.value = true
+            _regionsError.value = null
 
             if (_areas.value.isEmpty()) {
                 loadAreasAndThenRegions(countryId)
@@ -92,7 +96,8 @@ class JobLocationViewModel(
             }
             updateRegionsList(countryId)
 
-        }.onFailure { _ ->
+        }.onFailure { error ->
+            _regionsError.value = error.message ?: "Unknown error"
             _regions.value = emptyList()
         }
 
