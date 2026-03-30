@@ -44,29 +44,20 @@ class VacancyRepositoryImpl(
     private fun response(response: Response): Resource<VacancySearchResult> {
         return when (response.resultCode) {
             NO_INTERNET_CODE -> Resource.Error("Нет интернета", NO_INTERNET_CODE)
-            HTTP_OK -> {val searchResponse = response as VacancySearchResponse
-            Resource.Success(
-                VacancySearchResult(
-                    vacancies = searchResponse.items.orEmpty().map { it.toDomain() },
-                    found = searchResponse.found,
-                    page = searchResponse.page,
-                    pages = searchResponse.pages
+            HTTP_OK -> {
+                val searchResponse = response as VacancySearchResponse
+                Resource.Success(
+                    VacancySearchResult(
+                        vacancies = searchResponse.items.orEmpty().map { it.toDomain() },
+                        found = searchResponse.found,
+                        page = searchResponse.page,
+                        pages = searchResponse.pages
+                    )
                 )
-            )
-        }
+            }
+
             else -> Resource.Error("Ошибка сервера", response.resultCode)
         }
-    }
-
-    private fun successResponse(response: VacancySearchResponse): Resource<VacancySearchResult> {
-        return Resource.Success(
-            VacancySearchResult(
-                vacancies = response.items.orEmpty().map { it.toDomain() },
-                found = response.found,
-                page = response.page,
-                pages = response.pages
-            )
-        )
     }
 
     private fun VacancyDto.toDomain(): Vacancy {
@@ -121,6 +112,7 @@ class VacancyRepositoryImpl(
             url = url
         )
     }
+
     private fun PhoneDto.toPhoneInfo(): PhoneInfo {
         return PhoneInfo(
             formatted = formatted ?: "",

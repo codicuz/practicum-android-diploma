@@ -424,7 +424,6 @@ private fun ContactLabel(label: String) {
     Spacer(modifier = Modifier.height(2.dp))
 }
 
-
 @Composable
 private fun formatDetailSalary(vacancy: VacancyDetail): String {
     val from = vacancy.salaryFrom

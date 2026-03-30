@@ -20,5 +20,3 @@ sealed class Screen(
         fun createRoute(vacancyId: String): String = "vacancy_detail/$vacancyId"
     }
 }
-
-
