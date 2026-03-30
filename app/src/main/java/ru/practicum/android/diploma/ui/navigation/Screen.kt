@@ -8,7 +8,7 @@ sealed class Screen(
     val labelRes: Int? = null
 ) {
     object Home : Screen("home", R.drawable.nav_bar_home, R.string.nav_bar_home)
-    object Favourite : Screen("favourite", R.drawable.nav_bar_favorite, R.string.nav_bar_team)
+    object Favourite : Screen("favourite", R.drawable.nav_bar_favorite, R.string.nav_bar_favorite)
     object Team : Screen("team", R.drawable.nav_bar_team, R.string.nav_bar_team)
 
     object Filter : Screen("filter")

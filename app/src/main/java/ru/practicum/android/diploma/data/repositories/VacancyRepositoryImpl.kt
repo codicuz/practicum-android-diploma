@@ -28,13 +28,21 @@ class VacancyRepositoryImpl(
     override fun searchVacancies(
         query: String,
         page: Int,
-        perPage: Int
+        perPage: Int,
+        salary: Int?,
+        onlyWithSalary: Boolean,
+        industry: Int?,
+        area: Int?
     ): Flow<Resource<VacancySearchResult>> = flow {
         val response = networkClient.doRequest(
             VacancySearchRequest(
                 text = query,
                 page = page,
-                perPage = perPage
+                perPage = perPage,
+                salary = salary,
+                onlyWithSalary = onlyWithSalary,
+                industry = industry,
+                area = area
             )
         )
         emit(response(response))

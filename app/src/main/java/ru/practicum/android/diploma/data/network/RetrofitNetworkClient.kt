@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.data.network
 
+import android.util.Log
 import ru.practicum.android.diploma.data.dto.AreasRequest
 import ru.practicum.android.diploma.data.dto.AreasResponse
 import ru.practicum.android.diploma.data.dto.IndustriesRequest
@@ -46,6 +47,14 @@ class RetrofitNetworkClient(private val apiService: ApiService) : NetworkClient 
         options["text"] = request.text
         options["page"] = request.page.toString()
         options["per_page"] = request.perPage.toString()
+
+        request.salary?.let { options["salary"] = it.toString() }
+        if (request.onlyWithSalary) options["only_with_salary"] = "true"
+        request.industry?.let { options["industry"] = it.toString() }
+        request.area?.let { options["area"] = it.toString() }
+
+        Log.d("API_REQ", "Options: $options")
+
         return options
     }
 }

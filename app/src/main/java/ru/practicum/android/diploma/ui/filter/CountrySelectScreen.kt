@@ -23,6 +23,7 @@ import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.domain.models.CountryItemUi
 import ru.practicum.android.diploma.presentation.filter.JobLocationViewModel
 import ru.practicum.android.diploma.ui.components.CircularIndicator
+import ru.practicum.android.diploma.ui.components.NoInternetState
 import ru.practicum.android.diploma.ui.components.SimpleTopBarTempl
 
 @Composable
@@ -33,6 +34,7 @@ fun CountrySelectScreen(
 ) {
     val isLoading by viewModel.isCountriesLoading.collectAsState()
     val countries by viewModel.areas.collectAsState()
+    val isNoInternet by viewModel.isNoInternet.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.loadAreas()
@@ -43,6 +45,7 @@ fun CountrySelectScreen(
         onNavigationClick = onNavigateBack,
         countries = countries,
         isLoading = isLoading,
+        isNoInternet = isNoInternet,
         onCountrySelected = onCountrySelected
     )
 }
@@ -54,11 +57,11 @@ fun CountrySelectContent(
     onNavigationClick: () -> Unit,
     countries: List<CountryItemUi>,
     isLoading: Boolean,
+    isNoInternet: Boolean = false,
     onCountrySelected: (Int, String) -> Unit
 ) {
     Column(
-        modifier = modifier
-            .fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         SimpleTopBarTempl(
             modifier = modifier.padding(start = 4.dp),
@@ -69,6 +72,10 @@ fun CountrySelectContent(
         when {
             isLoading -> {
                 CircularIndicator()
+            }
+
+            isNoInternet -> {
+                NoInternetState()
             }
 
             countries.isEmpty() -> {
@@ -82,8 +89,7 @@ fun CountrySelectContent(
 
             else -> {
                 LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     items(countries) { country ->
                         Button(
@@ -91,9 +97,8 @@ fun CountrySelectContent(
                                 onCountrySelected(country.id, country.name)
                             }
                         ) {
-                            val weight = 1f
                             Text(country.name)
-                            Spacer(modifier = Modifier.weight(weight))
+                            Spacer(modifier = Modifier.weight(1f))
                             Icon(
                                 painter = painterResource(R.drawable.ic_button_arrow_right),
                                 contentDescription = null

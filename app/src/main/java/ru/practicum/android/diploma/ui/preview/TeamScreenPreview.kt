@@ -22,11 +22,7 @@ private fun ScreenPreview() {
             TeamMemberUi(
                 R.string.team_screen_content_item_name_3,
                 R.string.team_screen_content_item_role_3
-            ),
-//            TeamMemberUi(
-//                R.string.team_screen_content_item_name_4,
-//                R.string.team_screen_content_item_role_4
-//            )
+            )
         )
     }
 
