@@ -53,4 +53,8 @@
     <string name="enter_industry">Введите отрасль</string>
     <string name="job_location_select">Выбор места работы</string>
     <string name="choose">Выбрать</string>
+
+    <!-- Favorite screen -->
+    <string name="favorite_error">Не удалось получить список вакансий</string>
+    <string name="favorite_empty">Список пуст</string>
 </resources>

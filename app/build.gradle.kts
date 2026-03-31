@@ -79,6 +79,8 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.androidx.datastore.core)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.runtime)
 
     ksp(libs.androidx.room.compiler)
 

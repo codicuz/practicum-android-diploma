@@ -8,5 +8,6 @@ data class Vacancy(
     val areaName: String,
     val salaryFrom: Int?,
     val salaryTo: Int?,
-    val salaryCurrency: String?
+    val salaryCurrency: String?,
+    var isFavorite: Boolean = false
 )

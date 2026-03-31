@@ -64,7 +64,8 @@ class VacancyRepositoryImpl(
             areaName = area?.name ?: "",
             salaryFrom = salary?.from,
             salaryTo = salary?.to,
-            salaryCurrency = salary?.currency
+            salaryCurrency = salary?.currency,
+            isFavorite = false
         )
     }
 }
