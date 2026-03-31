@@ -55,7 +55,6 @@ import ru.practicum.android.diploma.ui.components.ErrorState
 import ru.practicum.android.diploma.ui.components.NoInternetState
 import ru.practicum.android.diploma.ui.components.NoVacancies
 import ru.practicum.android.diploma.ui.components.VacancyItem
-import ru.practicum.android.diploma.ui.components.formatSalary
 import ru.practicum.android.diploma.ui.theme.additionalColors
 
 @Composable
@@ -67,13 +66,19 @@ fun SearchScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+    val filterState by filterViewModel.state.collectAsState()
     val context = LocalContext.current
 
     val noInternetMessage = stringResource(R.string.toast_no_internet)
     val errorMessage = stringResource(R.string.toast_error)
 
-    val filterState by filterViewModel.state.collectAsState()
     val hasActiveFilters = filterState.hasActiveFilters()
+
+    LaunchedEffect(filterState) {
+        if (searchQuery.isNotBlank()) {
+            viewModel.refreshSearchWithFilters()
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.toastEvent.collect { event ->
@@ -156,6 +161,8 @@ fun SearchContent(
                 }
             }
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         SearchBar(
             query = searchQuery,
@@ -281,6 +288,13 @@ private fun ContentState(
     onLoadNextPage: () -> Unit
 ) {
     val listState = rememberLazyListState()
+    val focusManager = LocalFocusManager.current
+
+    LaunchedEffect(listState.isScrollInProgress) {
+        if (listState.isScrollInProgress) {
+            focusManager.clearFocus()
+        }
+    }
 
     val shouldLoadMore by remember {
         derivedStateOf {
@@ -297,12 +311,7 @@ private fun ContentState(
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        Text(
-            text = stringResource(R.string.search_found_vacancies, found),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onPrimary,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
+        FoundCounter(found = found)
 
         LazyColumn(
             state = listState,
@@ -340,8 +349,50 @@ private fun ContentState(
 }
 
 @Composable
+private fun FoundCounter(found: Int) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(R.string.search_found_vacancies, found),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.additionalColors.white,
+            modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .background(MaterialTheme.additionalColors.blue)
+                .padding(horizontal = 16.dp, vertical = 6.dp)
+        )
+    }
+}
+
+@Composable
 private fun EmptyState() {
-    NoVacancies()
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = stringResource(R.string.search_empty_result),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.additionalColors.white,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.additionalColors.blue)
+                    .padding(horizontal = 16.dp, vertical = 6.dp)
+            )
+        }
+
+        NoVacancies()
+    }
 }
 
 @Composable
@@ -360,5 +411,4 @@ private fun VacancyCard(vacancy: Vacancy, onClick: () -> Unit) {
         vacancy = vacancy,
         onClick = onClick
     )
-    formatSalary(vacancy = vacancy)
 }

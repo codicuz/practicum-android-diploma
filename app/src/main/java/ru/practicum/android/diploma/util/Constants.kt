@@ -8,4 +8,5 @@ object Constants {
     const val HTTP_BAD_REQUEST = 400
     const val HTTP_NOT_FOUND = 404
     const val HTTP_INTERNAL_SERVER_ERROR = 500
+    const val NO_INTERNET_CODE = -1
 }

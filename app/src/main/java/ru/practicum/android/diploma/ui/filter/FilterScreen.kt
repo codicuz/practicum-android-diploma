@@ -43,6 +43,7 @@ import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.presentation.filter.FilterState
 import ru.practicum.android.diploma.presentation.filter.FilterViewModel
 import ru.practicum.android.diploma.presentation.filter.hasActiveFilters
+import ru.practicum.android.diploma.presentation.search.SearchViewModel
 import ru.practicum.android.diploma.ui.components.DefaultButton
 import ru.practicum.android.diploma.ui.components.FilterSelectionItem
 import ru.practicum.android.diploma.ui.components.SimpleTopBarTempl
@@ -52,6 +53,7 @@ import ru.practicum.android.diploma.ui.theme.additionalColors
 fun FilterScreen(
     navController: NavHostController,
     viewModel: FilterViewModel = koinViewModel(),
+    searchViewModel: SearchViewModel = koinViewModel(),
     onNavigateBack: () -> Unit = {},
     onJobLocationClick: () -> Unit = {},
     onIndustryClick: () -> Unit = {},
@@ -93,6 +95,7 @@ fun FilterScreen(
     }
 
     fun onApplyClick() {
+        searchViewModel.applyFiltersAndSearch()
         navController.navigateUp()
     }
 

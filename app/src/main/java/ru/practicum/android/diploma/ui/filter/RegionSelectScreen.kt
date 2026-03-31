@@ -1,7 +1,5 @@
 package ru.practicum.android.diploma.ui.filter
 
-import android.util.Log
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -28,7 +26,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -40,7 +37,10 @@ import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.domain.models.RegionItemUi
 import ru.practicum.android.diploma.presentation.filter.JobLocationViewModel
 import ru.practicum.android.diploma.ui.components.CircularIndicator
+import ru.practicum.android.diploma.ui.components.ErrorRegion
+import ru.practicum.android.diploma.ui.components.NoInternetState
 import ru.practicum.android.diploma.ui.components.SimpleTopBarTempl
+import ru.practicum.android.diploma.ui.components.UnknownRegion
 import ru.practicum.android.diploma.ui.theme.additionalColors
 
 @Composable
@@ -53,15 +53,13 @@ fun RegionSelectScreen(
 ) {
     val regions by viewModel.regions.collectAsState()
     val isLoading by viewModel.isRegionsLoading.collectAsState()
+    val regionsError by viewModel.regionsError.collectAsState()
+    val isNoInternet by viewModel.isNoInternet.collectAsState()
     val initialCountryId = remember { countryId }
     val effectiveCountryId = initialCountryId ?: countryId
 
     LaunchedEffect(effectiveCountryId) {
         viewModel.loadRegions(effectiveCountryId)
-
-        if (effectiveCountryId != null) {
-            Log.d("RegionSelectScreen", "Loading regions for countryId: $effectiveCountryId")
-        }
     }
 
     RegionSelectContent(
@@ -69,6 +67,8 @@ fun RegionSelectScreen(
         modifier = Modifier,
         regions = regions,
         isLoading = isLoading,
+        error = regionsError,
+        isNoInternet = isNoInternet,
         onNavigationClick = onNavigateBack,
         onRegionSelected = { regionId, regionName ->
             navController.previousBackStackEntry?.savedStateHandle?.apply {
@@ -94,6 +94,8 @@ fun RegionSelectContent(
     regions: List<RegionItemUi>,
     onNavigationClick: () -> Unit,
     isLoading: Boolean,
+    error: String? = null,
+    isNoInternet: Boolean = false,
     onRegionSelected: (Int, String) -> Unit
 ) {
     val textFieldState = rememberTextFieldState()
@@ -127,6 +129,8 @@ fun RegionSelectContent(
 
         RegionContentState(
             isLoading = isLoading,
+            error = error,
+            isNoInternet = isNoInternet,
             filteredRegions = filteredRegions,
             searchQuery = textFieldState.text.toString(),
             onRegionSelected = onRegionSelected
@@ -192,6 +196,8 @@ private fun RegionSearchTextField(
 @Composable
 private fun RegionContentState(
     isLoading: Boolean,
+    error: String?,
+    isNoInternet: Boolean,
     filteredRegions: List<RegionItemUi>,
     searchQuery: String,
     onRegionSelected: (Int, String) -> Unit
@@ -200,33 +206,25 @@ private fun RegionContentState(
         isLoading -> {
             CircularIndicator()
         }
-
-        filteredRegions.isEmpty() -> {
-            RegionEmptyState(searchQuery = searchQuery)
+        isNoInternet -> {
+            NoInternetState()
         }
-
+        error != null -> {
+            ErrorRegion()
+        }
+        filteredRegions.isEmpty() -> {
+            if (searchQuery.isNotEmpty()) {
+                UnknownRegion()
+            } else {
+                ErrorRegion()
+            }
+        }
         else -> {
             RegionListState(
                 regions = filteredRegions,
                 onRegionSelected = onRegionSelected
             )
         }
-    }
-}
-
-@Composable
-private fun RegionEmptyState(searchQuery: String) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = if (searchQuery.isNotEmpty()) {
-                "Ничего не найдено"
-            } else {
-                "Список регионов пуст"
-            }
-        )
     }
 }
 

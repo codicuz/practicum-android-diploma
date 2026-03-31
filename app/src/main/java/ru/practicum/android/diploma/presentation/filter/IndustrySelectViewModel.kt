@@ -9,9 +9,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.domain.models.IndustryItemUi
 import ru.practicum.android.diploma.domain.usecases.GetIndustriesUseCase
+import ru.practicum.android.diploma.util.NetworkConnectivityChecker
 
 class IndustrySelectViewModel(
-    private val getIndustriesUseCase: GetIndustriesUseCase
+    private val getIndustriesUseCase: GetIndustriesUseCase,
+    private val networkChecker: NetworkConnectivityChecker
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(IndustrySelectState())
@@ -20,32 +22,42 @@ class IndustrySelectViewModel(
     private val _industries = MutableStateFlow<List<IndustryItemUi>>(emptyList())
     val industries = _industries.asStateFlow()
 
+    private val _isNoInternet = MutableStateFlow(false)
+    val isNoInternet: StateFlow<Boolean> = _isNoInternet.asStateFlow()
+
     fun loadIndustries() {
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, error = null) }
+            if (!networkChecker.isConnected()) {
+                _isNoInternet.value = true
+                _state.update { it.copy(isLoading = false) }
+            } else {
+                _isNoInternet.value = false
+                _state.update { it.copy(isLoading = true, error = null) }
+                _isNoInternet.value = false
 
-            val result = getIndustriesUseCase()
+                val result = getIndustriesUseCase()
 
-            result.onSuccess { industries ->
-                _industries.value = industries.map { industry ->
-                    IndustryItemUi(
-                        id = industry.id,
-                        name = industry.name
-                    )
-                }
+                result.onSuccess { industries ->
+                    _industries.value = industries.map { industry ->
+                        IndustryItemUi(
+                            id = industry.id,
+                            name = industry.name
+                        )
+                    }
+                    updateFilteredIndustries(_state.value.searchQuery)
+                    _state.update { it.copy(isLoading = false) }
 
-                updateFilteredIndustries(_state.value.searchQuery)
-
-                _state.update {
-                    it.copy(isLoading = false)
-                }
-
-            }.onFailure { error ->
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        error = error.message ?: "Unknown error"
-                    )
+                }.onFailure { error ->
+                    val isNoInternet = error.message?.contains("Unable to resolve host") == true ||
+                        error.message?.contains("Failed to connect") == true ||
+                        error.message?.contains("timeout") == true
+                    _isNoInternet.value = isNoInternet
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = error.message ?: "Unknown error"
+                        )
+                    }
                 }
             }
         }

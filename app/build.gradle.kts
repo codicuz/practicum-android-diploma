@@ -94,4 +94,5 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.logging.interceptor)
     implementation(libs.androidsvg.aar)
+    implementation(libs.coil.svg)
 }
