@@ -68,4 +68,8 @@
     <string name="vacancy_detail_not_found">Вакансия не найдена или удалена</string>
     <string name="error_get_list">Не удалось получить список</string>
     <string name="unknown_region">Такого региона нет</string>
+
+    <!-- Favorite vacancies -->
+    <string name="favorite_empty">Список пуст</string>
+    <string name="favorite_error">Не удалось получить список вакансий</string>
 </resources>
