@@ -25,7 +25,6 @@ fun FavoriteScreen(
     viewModel: FavoriteViewModel = koinViewModel(),
     onVacancyClick: (String) -> Unit = {},
 ) {
-
     val lifecycleOwner = LocalLifecycleOwner.current
 
     DisposableEffect(lifecycleOwner) {
@@ -44,12 +43,10 @@ fun FavoriteScreen(
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     FavoriteContent(state, onVacancyClick)
-
 }
 
 @Composable
 fun FavoriteContent(state: FavoriteState, onItemClick: (String) -> Unit) {
-
     Column(modifier = Modifier.padding(16.dp)) {
         SimpleScreenTitle(R.string.favorite_screen_title)
 
@@ -57,15 +54,14 @@ fun FavoriteContent(state: FavoriteState, onItemClick: (String) -> Unit) {
             is FavoriteState.Loading -> {}
             is FavoriteState.Empty -> NotifyImage(R.drawable.list_empty, R.string.favorite_empty)
             is FavoriteState.Error -> NotifyImage(R.drawable.cat, R.string.favorite_error)
-            is FavoriteState.Success -> LazyColumn() {
-                items(state.vacancies.size) {
-                    index -> VacancyItem(
+            is FavoriteState.Success -> LazyColumn {
+                items(state.vacancies.size) { index ->
+                    VacancyItem(
                         vacancy = state.vacancies[index],
-                        onClick = {onItemClick(state.vacancies[index].id)}
+                        onClick = { onItemClick(state.vacancies[index].id) }
                     )
                 }
             }
         }
     }
 }
-

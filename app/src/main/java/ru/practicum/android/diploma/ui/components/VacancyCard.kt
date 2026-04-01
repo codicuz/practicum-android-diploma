@@ -1,6 +1,5 @@
 package ru.practicum.android.diploma.ui.components
 
-import android.icu.text.DecimalFormat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -37,6 +36,7 @@ import coil.request.ImageRequest
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.domain.models.Vacancy
 import ru.practicum.android.diploma.ui.theme.additionalColors
+import ru.practicum.android.diploma.util.formatNumberWithSpaces
 
 @Composable
 fun VacancyItem(
@@ -182,12 +182,6 @@ fun formatSalary(vacancy: Vacancy): String {
 }
 
 const val GrpSize = 3
-fun formatNumberWithSpaces(number: Int): String {
-    val formatter = DecimalFormat("#,###").apply {
-        groupingSize = GrpSize
-    }
-    return formatter.format(number).replace(',', ' ')
-}
 
 fun getCurrencySymbol(currency: String?): String {
     return when (currency) {

@@ -8,26 +8,25 @@ import ru.practicum.android.diploma.domain.models.VacancyDetail
 
 class FavoriteInteractorImpl(
     private val repository: FavoriteRepository
-): FavoriteInteractor {
+) : FavoriteInteractor {
 
-    suspend override fun loadVacancies(): Flow<List<Vacancy>> {
+    override suspend fun loadVacancies(): Flow<List<Vacancy>> {
         return repository.loadVacancies()
     }
 
-    suspend override fun deleteVacancy(idVacancy: String) {
+    override suspend fun deleteVacancy(idVacancy: String) {
         repository.deleteVacancy(idVacancy)
     }
 
-    suspend override fun addVacancy(vacancy: VacancyDetail) {
+    override suspend fun addVacancy(vacancy: VacancyDetail) {
         repository.addVacancy(vacancy)
     }
 
-    suspend override fun isFavorite(idVacancy: String): Flow<Boolean> {
+    override suspend fun isFavorite(idVacancy: String): Flow<Boolean> {
         return repository.isFavorite(idVacancy)
     }
 
-    suspend override fun getVacancyById(idVacancy: String): Flow<VacancyDetail?>{
+    override suspend fun getVacancyById(idVacancy: String): Flow<VacancyDetail?> {
         return repository.getVacancyById(idVacancy)
     }
-
 }

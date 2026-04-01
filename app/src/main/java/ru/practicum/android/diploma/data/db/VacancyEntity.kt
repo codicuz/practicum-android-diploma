@@ -2,7 +2,6 @@ package ru.practicum.android.diploma.data.db
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import ru.practicum.android.diploma.domain.models.PhoneInfo
 
 @Entity(tableName = "vacancies")
 data class VacancyEntity(

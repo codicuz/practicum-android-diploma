@@ -4,9 +4,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import ru.practicum.android.diploma.domain.models.PhoneInfo
 import ru.practicum.android.diploma.domain.models.VacancyDetail
-import kotlin.String
 
-class VacancyDbConverter  {
+class VacancyDbConverter {
     val gson = Gson()
     val listStringType = object : TypeToken<List<String>>() {}.type
     val listPhoneInfoType = object : TypeToken<List<PhoneInfo>>() {}.type
@@ -31,7 +30,6 @@ class VacancyDbConverter  {
             contactPhonesJson = gson.toJson(vacancy.contactPhones),
             skillsJson = gson.toJson(vacancy.skills),
             url = vacancy.url,
-
         )
     }
 

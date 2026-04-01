@@ -41,7 +41,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
@@ -57,6 +56,7 @@ import ru.practicum.android.diploma.ui.components.SimpleTopBarAction
 import ru.practicum.android.diploma.ui.components.SimpleTopBarTempl
 import ru.practicum.android.diploma.ui.components.getCurrencySymbol
 import ru.practicum.android.diploma.ui.theme.additionalColors
+import ru.practicum.android.diploma.util.formatNumberWithSpaces
 
 @Composable
 fun VacancyScreen(
@@ -442,9 +442,25 @@ private fun formatDetailSalary(vacancy: VacancyDetail): String {
     val currency = getCurrencySymbol(vacancy.salaryCurrency)
 
     return when {
-        from != null && to != null -> stringResource(R.string.salary_from_to, from, to, currency)
-        from != null -> stringResource(R.string.salary_from, from, currency)
-        to != null -> stringResource(R.string.salary_to, to, currency)
+        from != null && to != null -> stringResource(
+            R.string.salary_from_to,
+            formatNumberWithSpaces(from),
+            formatNumberWithSpaces(to),
+            currency
+        )
+
+        from != null -> stringResource(
+            R.string.salary_from,
+            formatNumberWithSpaces(from),
+            currency
+        )
+
+        to != null -> stringResource(
+            R.string.salary_to,
+            formatNumberWithSpaces(to),
+            currency
+        )
+
         else -> stringResource(R.string.salary_not_specified)
     }
 }
@@ -488,6 +504,9 @@ private fun openDialer(context: Context, phone: String) {
 }
 
 private fun favoriteIcon(isOn: Boolean): Int {
-    if (isOn) return R.drawable.favorites_on__24px
-    else return R.drawable.favorites_off__24px
+    if (isOn) {
+        return R.drawable.favorites_on__24px
+    } else {
+        return R.drawable.favorites_off__24px
+    }
 }

@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.data
+package ru.practicum.android.diploma.data.repositories
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -12,38 +12,41 @@ import ru.practicum.android.diploma.domain.models.VacancyDetail
 class FavoriteRepositoryImpl(
     private val dao: VacanciesDao,
     private val vacancyDbConverter: VacancyDbConverter
-): FavoriteRepository {
+) : FavoriteRepository {
 
-    suspend override fun addVacancy(vacancy: VacancyDetail) {
+    override suspend fun addVacancy(vacancy: VacancyDetail) {
         dao.insert(vacancyDbConverter.map(vacancy))
     }
 
-    suspend override fun deleteVacancy(idVacancy: String) {
+    override suspend fun deleteVacancy(idVacancy: String) {
         dao.delete(idVacancy)
     }
 
-    suspend override fun getVacancyById(idVacancy: String): Flow<VacancyDetail?>  = flow {
+    override suspend fun getVacancyById(idVacancy: String): Flow<VacancyDetail?> = flow {
         val vacancy = dao.getVacancyById(idVacancy)
-        if (vacancy != null) emit ( vacancyDbConverter.map(vacancy))
-        else emit(null)
+        if (vacancy != null) {
+            emit(vacancyDbConverter.map(vacancy))
+        } else {
+            emit(null)
+        }
     }
 
-    suspend override fun loadVacancies(): Flow<List<Vacancy>> = flow {
+    override suspend fun loadVacancies(): Flow<List<Vacancy>> = flow {
         val vacancies = convert(dao.getAll())
         emit(vacancies)
     }
 
-    suspend override fun isFavorite(idVacancy: String): Flow<Boolean>  = flow {
-        emit (dao.vacancySaved(idVacancy))
+    override suspend fun isFavorite(idVacancy: String): Flow<Boolean> = flow {
+        emit(dao.vacancySaved(idVacancy))
     }
 
     private fun convert(vacancies: List<VacancyEntity>): List<Vacancy> {
-        return vacancies.map {vacancy ->
-            VacancyDetailToVacancy(vacancyDbConverter.map(vacancy))
+        return vacancies.map { vacancy ->
+            vacancyDetailToVacancy(vacancyDbConverter.map(vacancy))
         }
     }
 
-    private fun VacancyDetailToVacancy(vacancy: VacancyDetail): Vacancy{
+    private fun vacancyDetailToVacancy(vacancy: VacancyDetail): Vacancy {
         return Vacancy(
             vacancy.id,
             vacancy.name,
@@ -56,4 +59,3 @@ class FavoriteRepositoryImpl(
         )
     }
 }
-
