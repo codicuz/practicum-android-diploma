@@ -5,11 +5,9 @@
     <string name="team_screen_content_item_name_1">Роман Алексеевич</string>
     <string name="team_screen_content_item_name_2">Василий Александрович</string>
     <string name="team_screen_content_item_name_3">Роман Александрович</string>
-<!--    <string name="team_screen_content_item_name_4">Человек номер Четыре</string>-->
     <string name="team_screen_content_item_role_1">Лидер</string>
     <string name="team_screen_content_item_role_2">Разработчик</string>
     <string name="team_screen_content_item_role_3">Разработчик</string>
-<!--    <string name="team_screen_content_item_role_4">Разработчик 3</string>-->
     <string name="search_screen_title">Поиск вакансий</string>
     <string name="filter_screen_title">Настройки фильтрации</string>
     <string name="vacancy_screen_title">Вакансия</string>
@@ -36,9 +34,9 @@
     <string name="reset">Сбросить</string>
 
     <!-- Salary -->
-    <string name="salary_from_to">от %1$d до %2$d %3$s</string>
-    <string name="salary_from">от %1$d %2$s</string>
-    <string name="salary_to">до %1$d %2$s</string>
+    <string name="salary_from_to">от %1$s до %2$s %3$s</string>
+    <string name="salary_from">от %1$s %2$s</string>
+    <string name="salary_to">до %1$s %2$s</string>
     <string name="salary_not_specified">Зарплата не указана</string>
 
     <string name="toast_no_internet">Проверьте подключение к интернету</string>
@@ -53,4 +51,25 @@
     <string name="enter_industry">Введите отрасль</string>
     <string name="job_location_select">Выбор места работы</string>
     <string name="choose">Выбрать</string>
+
+    <!-- Vacancy Detail screen -->
+    <string name="vacancy_detail_title">Вакансия</string>
+    <string name="vacancy_detail_description">Описание вакансии</string>
+    <string name="vacancy_detail_key_skills">Ключевые навыки</string>
+    <string name="vacancy_detail_contacts">Контакты</string>
+    <string name="vacancy_detail_contact_person">Контактное лицо</string>
+    <string name="vacancy_detail_email">Email</string>
+    <string name="vacancy_detail_phone">Телефон</string>
+    <string name="vacancy_detail_phone_comment">Комментарий</string>
+    <string name="vacancy_detail_experience">Требуемый опыт</string>
+    <string name="vacancy_detail_employment_schedule">Условия</string>
+    <string name="vacancy_detail_share">Поделиться</string>
+    <string name="vacancy_detail_error">Ошибка загрузки вакансии</string>
+    <string name="vacancy_detail_not_found">Вакансия не найдена или удалена</string>
+    <string name="error_get_list">Не удалось получить список</string>
+    <string name="unknown_region">Такого региона нет</string>
+
+    <!-- Favorite vacancies -->
+    <string name="favorite_empty">Список пуст</string>
+    <string name="favorite_error">Не удалось получить список вакансий</string>
 </resources>

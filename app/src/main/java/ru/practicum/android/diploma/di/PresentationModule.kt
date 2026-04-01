@@ -12,10 +12,10 @@ import ru.practicum.android.diploma.presentation.vacancy.VacancyViewModel
 
 val presentationModule = module {
     viewModel { TeamViewModel(get()) }
-    viewModel { SearchViewModel(get()) }
-    viewModel { FavoriteViewModel() }
+    viewModel { SearchViewModel(get(), get(), get()) }
+    viewModel { FavoriteViewModel(get()) }
     viewModel { FilterViewModel(get()) }
-    viewModel { JobLocationViewModel(get()) }
-    viewModel { IndustrySelectViewModel(get()) }
-    viewModel { VacancyViewModel() }
+    viewModel { JobLocationViewModel(get(), get()) }
+    viewModel { IndustrySelectViewModel(get(), get()) }
+    viewModel { VacancyViewModel(get(), get()) }
 }
