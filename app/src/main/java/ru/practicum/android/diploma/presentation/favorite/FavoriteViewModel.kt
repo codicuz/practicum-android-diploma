@@ -25,6 +25,10 @@ class FavoriteViewModel(private val favoriteInteractor: FavoriteInteractor) : Vi
         loadFavoriteVacancie()
     }
 
+    fun reloadData(){
+        loadFavoriteVacancie()
+    }
+
     private fun loadFavoriteVacancie(){
         viewModelScope.launch {
             favoriteInteractor.loadVacancies().collect { vacancies ->

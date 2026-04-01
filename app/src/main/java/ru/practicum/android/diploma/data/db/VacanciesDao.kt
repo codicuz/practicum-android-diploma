@@ -20,6 +20,9 @@ interface VacanciesDao {
     suspend fun getAll(): List<VacancyEntity>
 
     @Query("SELECT * FROM vacancies WHERE id = :id")
-    suspend fun getVacancyById(id: Int): VacancyEntity
+    suspend fun getVacancyById(id: String): VacancyEntity?
+
+    @Query("SELECT EXISTS(SELECT * FROM vacancies WHERE id = :id)")
+    suspend fun vacancySaved(id: String): Boolean
 
 }

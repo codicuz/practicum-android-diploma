@@ -113,7 +113,7 @@ private fun VacancyTopBar(
             }
         ),
         secondaryAction = SimpleTopBarAction(
-            icon = R.drawable.favorites_off__24px,
+            icon = favoriteIcon(vacancy?.isFavorite?:false),
             contentDescription = "В избранное",
             onClick = { onClickFavorite() }
         )
@@ -477,4 +477,9 @@ private fun openDialer(context: Context, phone: String) {
         data = Uri.parse("tel:$cleanPhone")
     }
     context.startActivity(intent)
+}
+
+private fun favoriteIcon(isOn: Boolean): Int {
+    if (isOn) return R.drawable.favorites_on__24px
+    else return R.drawable.favorites_off__24px
 }

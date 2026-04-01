@@ -22,9 +22,19 @@ class FavoriteRepositoryImpl(
         dao.delete(idVacancy)
     }
 
+    suspend override fun getVacancyById(idVacancy: String): Flow<VacancyDetail?>  = flow {
+        val vacancy = dao.getVacancyById(idVacancy)
+        if (vacancy != null) emit ( vacancyDbConverter.map(vacancy))
+        else emit(null)
+    }
+
     suspend override fun loadVacancies(): Flow<List<Vacancy>> = flow {
         val vacancies = convert(dao.getAll())
         emit(vacancies)
+    }
+
+    suspend override fun isFavorite(idVacancy: String): Flow<Boolean>  = flow {
+        emit (dao.vacancySaved(idVacancy))
     }
 
     private fun convert(vacancies: List<VacancyEntity>): List<Vacancy> {

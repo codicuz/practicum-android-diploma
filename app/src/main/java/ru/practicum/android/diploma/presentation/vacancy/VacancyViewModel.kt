@@ -22,16 +22,24 @@ class VacancyViewModel(
     fun loadVacancy(vacancyId: String) {
         _state.value = VacancyDetailState.Loading
         viewModelScope.launch {
-            vacancyInteractor.getVacancyById(vacancyId).collect { result ->
-                when (result) {
-                    is Resource.Success -> {
-                        _state.value = VacancyDetailState.Content(result.data)
-                    }
-                    is Resource.Error -> {
-                        _state.value = if (result.code == NO_INTERNET_CODE) {
-                            VacancyDetailState.NoInternet
-                        } else {
-                            VacancyDetailState.Error
+            favoriteInteractor.isFavorite(idVacancy = vacancyId).collect { result ->
+                if (result) favoriteInteractor.getVacancyById(vacancyId).collect { result ->
+                    if (result != null) _state.value = VacancyDetailState.Content(result)
+                } else {
+
+                    vacancyInteractor.getVacancyById(vacancyId).collect { result ->
+                        when (result) {
+                            is Resource.Success -> {
+                                _state.value = VacancyDetailState.Content(result.data)
+                            }
+
+                            is Resource.Error -> {
+                                _state.value = if (result.code == NO_INTERNET_CODE) {
+                                    VacancyDetailState.NoInternet
+                                } else {
+                                    VacancyDetailState.Error
+                                }
+                            }
                         }
                     }
                 }
@@ -45,10 +53,12 @@ class VacancyViewModel(
             if (vacancyDetail.isFavorite) {
                 viewModelScope.launch {
                     favoriteInteractor.deleteVacancy(vacancyDetail.id)
+                    loadVacancy(vacancyDetail.id)
                 }
             } else {
                 viewModelScope.launch {
                     favoriteInteractor.addVacancy(vacancyDetail)
+                    loadVacancy(vacancyDetail.id)
                 }
             }
         }

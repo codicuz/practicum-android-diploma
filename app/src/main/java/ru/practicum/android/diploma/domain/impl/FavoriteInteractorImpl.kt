@@ -21,4 +21,13 @@ class FavoriteInteractorImpl(
     suspend override fun addVacancy(vacancy: VacancyDetail) {
         repository.addVacancy(vacancy)
     }
+
+    suspend override fun isFavorite(idVacancy: String): Flow<Boolean> {
+        return repository.isFavorite(idVacancy)
+    }
+
+    suspend override fun getVacancyById(idVacancy: String): Flow<VacancyDetail?>{
+        return repository.getVacancyById(idVacancy)
+    }
+
 }
