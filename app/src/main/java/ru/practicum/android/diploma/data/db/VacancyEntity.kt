@@ -1,7 +1,11 @@
-package ru.practicum.android.diploma.domain.models
+package ru.practicum.android.diploma.data.db
 
-data class VacancyDetail(
-    val id: String,
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "vacancies")
+data class VacancyEntity(
+    @PrimaryKey val id: String,
     val name: String,
     val description: String,
     val employerName: String,
@@ -16,12 +20,7 @@ data class VacancyDetail(
     val address: String?,
     val contactName: String?,
     val contactEmail: String?,
-    val contactPhones: List<PhoneInfo>,
-    val skills: List<String>,
-    val url: String?,
-    val isFavorite: Boolean = false,
-)
-data class PhoneInfo(
-    val formatted: String,
-    val comment: String?
+    val contactPhonesJson: String,
+    val skillsJson: String,
+    val url: String?
 )

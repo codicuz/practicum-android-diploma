@@ -131,7 +131,11 @@ fun NavGraph(
         }
 
         composable(route = Screen.Favourite.route) {
-            FavoriteScreen()
+            FavoriteScreen(
+                onVacancyClick = { vacancyId ->
+                    navController.navigate(Screen.VacancyDetail.createRoute(vacancyId))
+                },
+            )
         }
 
         composable(route = Screen.Team.route) {

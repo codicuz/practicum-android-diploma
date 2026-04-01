@@ -72,7 +72,7 @@ fun SimpleTopBarTempl(
                         Icon(
                             painter = painterResource(action.icon),
                             contentDescription = action.contentDescription,
-                            tint = MaterialTheme.colorScheme.onPrimary
+                            tint = action.tint ?: MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }
@@ -85,7 +85,7 @@ fun SimpleTopBarTempl(
                         Icon(
                             painter = painterResource(action.icon),
                             contentDescription = action.contentDescription,
-                            tint = MaterialTheme.colorScheme.onPrimary
+                            tint = action.tint ?: MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }

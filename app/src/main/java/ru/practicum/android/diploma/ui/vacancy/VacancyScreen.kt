@@ -56,6 +56,7 @@ import ru.practicum.android.diploma.ui.components.SimpleTopBarAction
 import ru.practicum.android.diploma.ui.components.SimpleTopBarTempl
 import ru.practicum.android.diploma.ui.components.getCurrencySymbol
 import ru.practicum.android.diploma.ui.theme.additionalColors
+import ru.practicum.android.diploma.util.formatNumberWithSpaces
 
 @Composable
 fun VacancyScreen(
@@ -74,7 +75,8 @@ fun VacancyScreen(
         VacancyTopBar(
             state = state,
             context = context,
-            onNavigateBack = onNavigateBack
+            onNavigateBack = onNavigateBack,
+            onClickFavorite = viewModel::addVacancyToFavorite,
         )
 
         when (state) {
@@ -94,9 +96,17 @@ fun VacancyScreen(
 private fun VacancyTopBar(
     state: VacancyDetailState,
     context: Context,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onClickFavorite: () -> Unit,
 ) {
     val vacancy = (state as? VacancyDetailState.Content)?.vacancy
+    val isFavorite = vacancy?.isFavorite ?: false
+
+    val favoriteTint = if (isFavorite) {
+        MaterialTheme.additionalColors.red
+    } else {
+        MaterialTheme.colorScheme.onPrimary
+    }
 
     SimpleTopBarTempl(
         text = R.string.vacancy_detail_title,
@@ -110,9 +120,10 @@ private fun VacancyTopBar(
             }
         ),
         secondaryAction = SimpleTopBarAction(
-            icon = R.drawable.favorites_off__24px,
+            icon = favoriteIcon(vacancy?.isFavorite ?: false),
             contentDescription = "В избранное",
-            onClick = { /* !!!!экрааааааааан избранных вакансий, ждем....!!!!! */ }
+            onClick = { onClickFavorite() },
+            tint = favoriteTint
         )
     )
 }
@@ -431,9 +442,25 @@ private fun formatDetailSalary(vacancy: VacancyDetail): String {
     val currency = getCurrencySymbol(vacancy.salaryCurrency)
 
     return when {
-        from != null && to != null -> stringResource(R.string.salary_from_to, from, to, currency)
-        from != null -> stringResource(R.string.salary_from, from, currency)
-        to != null -> stringResource(R.string.salary_to, to, currency)
+        from != null && to != null -> stringResource(
+            R.string.salary_from_to,
+            formatNumberWithSpaces(from),
+            formatNumberWithSpaces(to),
+            currency
+        )
+
+        from != null -> stringResource(
+            R.string.salary_from,
+            formatNumberWithSpaces(from),
+            currency
+        )
+
+        to != null -> stringResource(
+            R.string.salary_to,
+            formatNumberWithSpaces(to),
+            currency
+        )
+
         else -> stringResource(R.string.salary_not_specified)
     }
 }
@@ -474,4 +501,12 @@ private fun openDialer(context: Context, phone: String) {
         data = Uri.parse("tel:$cleanPhone")
     }
     context.startActivity(intent)
+}
+
+private fun favoriteIcon(isOn: Boolean): Int {
+    if (isOn) {
+        return R.drawable.favorites_on__24px
+    } else {
+        return R.drawable.favorites_off__24px
+    }
 }
