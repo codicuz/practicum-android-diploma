@@ -13,8 +13,8 @@ interface VacanciesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(vacancy: VacancyEntity)
 
-    @Delete(entity = VacancyEntity::class)
-    suspend fun delete(vacancy: VacancyEntity)
+    @Query("DELETE FROM vacancies WHERE id = :idVacancy")
+    suspend fun delete(idVacancy: String)
 
     @Query("SELECT * FROM vacancies")
     suspend fun getAll(): List<VacancyEntity>

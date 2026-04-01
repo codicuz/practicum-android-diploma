@@ -6,12 +6,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.domain.api.FavoriteInteractor
 import ru.practicum.android.diploma.domain.api.VacancyInteractor
 import ru.practicum.android.diploma.util.Constants.NO_INTERNET_CODE
 import ru.practicum.android.diploma.util.Resource
 
 class VacancyViewModel(
-    private val vacancyInteractor: VacancyInteractor
+    private val vacancyInteractor: VacancyInteractor,
+    private val favoriteInteractor: FavoriteInteractor,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<VacancyDetailState>(VacancyDetailState.Loading)
@@ -36,4 +38,20 @@ class VacancyViewModel(
             }
         }
     }
+
+    fun addVacancyToFavorite(){
+        if (state.value is VacancyDetailState.Content) {
+            val vacancyDetail = (state.value as VacancyDetailState.Content).vacancy
+            if (vacancyDetail.isFavorite) {
+                viewModelScope.launch {
+                    favoriteInteractor.deleteVacancy(vacancyDetail.id)
+                }
+            } else {
+                viewModelScope.launch {
+                    favoriteInteractor.addVacancy(vacancyDetail)
+                }
+            }
+        }
+    }
+
 }

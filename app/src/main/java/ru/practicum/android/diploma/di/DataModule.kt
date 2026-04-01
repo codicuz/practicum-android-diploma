@@ -29,7 +29,7 @@ val dataModule = module {
     single<AreasRepository> { AreasRepositoryImpl(get()) }
     single<IndustriesRepository> { IndustriesRepositoryImpl(get()) }
     single { FilterDataStore(get()) }
-    single {Room.databaseBuilder(get(), AppDataBase::class.java, "database.db").build()}
+    single {Room.databaseBuilder(get(), AppDataBase::class.java, "database.db").fallbackToDestructiveMigration(true).build()}
     single {get<AppDataBase>().vacanciesDao()}
     single<FavoriteRepository> { FavoriteRepositoryImpl(get(), get()) }
 

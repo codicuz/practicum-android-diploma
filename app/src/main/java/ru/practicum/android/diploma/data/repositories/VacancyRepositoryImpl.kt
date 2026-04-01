@@ -78,7 +78,6 @@ class VacancyRepositoryImpl(
             salaryFrom = salary?.from,
             salaryTo = salary?.to,
             salaryCurrency = salary?.currency,
-            isFavorite = false
         )
     }
 

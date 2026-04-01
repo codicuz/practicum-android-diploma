@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import ru.practicum.android.diploma.domain.api.FavoriteInteractor
 import ru.practicum.android.diploma.domain.api.FavoriteRepository
 import ru.practicum.android.diploma.domain.models.Vacancy
+import ru.practicum.android.diploma.domain.models.VacancyDetail
 
 class FavoriteInteractorImpl(
     private val repository: FavoriteRepository
@@ -13,11 +14,11 @@ class FavoriteInteractorImpl(
         return repository.loadVacancies()
     }
 
-    suspend override fun deleteVacancy(vacancy: Vacancy) {
-        repository.deleteVacancy(vacancy)
+    suspend override fun deleteVacancy(idVacancy: String) {
+        repository.deleteVacancy(idVacancy)
     }
 
-    suspend override fun addVacancy(vacancy: Vacancy) {
+    suspend override fun addVacancy(vacancy: VacancyDetail) {
         repository.addVacancy(vacancy)
     }
 }

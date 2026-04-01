@@ -18,7 +18,8 @@ data class VacancyDetail(
     val contactEmail: String?,
     val contactPhones: List<PhoneInfo>,
     val skills: List<String>,
-    val url: String?
+    val url: String?,
+    var isFavorite: Boolean = false,
 )
 data class PhoneInfo(
     val formatted: String,

@@ -14,15 +14,14 @@ class FavoriteViewModel(private val favoriteInteractor: FavoriteInteractor) : Vi
     val uiState: StateFlow<FavoriteState> = _uiState.asStateFlow()
 
     init {
-
-        val vacancies = dummyVacancies()
-        viewModelScope.launch {
-        vacancies.forEach {
-
-                favoriteInteractor.addVacancy(it)
-        }}
-
-
+//
+//        val vacancies = dummyVacancies()
+//        viewModelScope.launch {
+//        vacancies.forEach {
+//
+//                favoriteInteractor.addVacancy(it)
+//        }}
+//
         loadFavoriteVacancie()
     }
 
@@ -41,10 +40,10 @@ class FavoriteViewModel(private val favoriteInteractor: FavoriteInteractor) : Vi
 
 
 
-fun dummyVacancies(): List<Vacancy>{
-    return listOf(
-        Vacancy("001", "менеджер по клинингу", "ООО 'Рюмашка'", null, "Россия", 10000, 10000, "RUB" ),
-        Vacancy("002", "старший помощник младшего дворника", "ООО 'Рюмашка'", null, "Россия", 20000, 30000, "RUB" ),
-        Vacancy("003", "специалист ОТК", "ЗАО 'Ликероводчный завод имени трудового красного знамени'", null, "Россия", 50000, 50000, "RUB" ),
-    )
-}
+//fun dummyVacancies(): List<Vacancy>{
+//    return listOf(
+//        Vacancy("001", "менеджер по клинингу", "ООО 'Рюмашка'", null, "Россия", 10000, 10000, "RUB" ),
+//        Vacancy("002", "старший помощник младшего дворника", "ООО 'Рюмашка'", null, "Россия", 20000, 30000, "RUB" ),
+//        Vacancy("003", "специалист ОТК", "ЗАО 'Ликероводчный завод имени трудового красного знамени'", null, "Россия", 50000, 50000, "RUB" ),
+//    )
+//}

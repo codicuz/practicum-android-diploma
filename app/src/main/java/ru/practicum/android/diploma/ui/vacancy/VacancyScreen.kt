@@ -47,6 +47,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import org.koin.androidx.compose.koinViewModel
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.domain.models.Vacancy
 import ru.practicum.android.diploma.domain.models.VacancyDetail
 import ru.practicum.android.diploma.presentation.vacancy.VacancyDetailState
 import ru.practicum.android.diploma.presentation.vacancy.VacancyViewModel
@@ -74,7 +75,8 @@ fun VacancyScreen(
         VacancyTopBar(
             state = state,
             context = context,
-            onNavigateBack = onNavigateBack
+            onNavigateBack = onNavigateBack,
+            onClickFavorite = viewModel::addVacancyToFavorite,
         )
 
         when (state) {
@@ -94,7 +96,8 @@ fun VacancyScreen(
 private fun VacancyTopBar(
     state: VacancyDetailState,
     context: Context,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onClickFavorite: () -> Unit,
 ) {
     val vacancy = (state as? VacancyDetailState.Content)?.vacancy
 
@@ -112,7 +115,7 @@ private fun VacancyTopBar(
         secondaryAction = SimpleTopBarAction(
             icon = R.drawable.favorites_off__24px,
             contentDescription = "В избранное",
-            onClick = { /* !!!!экрааааааааан избранных вакансий, ждем....!!!!! */ }
+            onClick = { onClickFavorite() }
         )
     )
 }

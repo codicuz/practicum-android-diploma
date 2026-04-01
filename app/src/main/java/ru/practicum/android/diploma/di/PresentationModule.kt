@@ -17,5 +17,5 @@ val presentationModule = module {
     viewModel { FilterViewModel(get()) }
     viewModel { JobLocationViewModel(get(), get()) }
     viewModel { IndustrySelectViewModel(get(), get()) }
-    viewModel { VacancyViewModel(get()) }
+    viewModel { VacancyViewModel(get(), get()) }
 }
