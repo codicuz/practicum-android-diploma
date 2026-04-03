@@ -25,6 +25,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -41,6 +42,7 @@ import ru.practicum.android.diploma.presentation.filter.IndustrySelectState
 import ru.practicum.android.diploma.presentation.filter.IndustrySelectViewModel
 import ru.practicum.android.diploma.ui.components.CircularIndicator
 import ru.practicum.android.diploma.ui.components.DefaultButton
+import ru.practicum.android.diploma.ui.components.NoInternetState
 import ru.practicum.android.diploma.ui.components.SimpleTopBarTempl
 import ru.practicum.android.diploma.ui.theme.additionalColors
 
@@ -51,6 +53,7 @@ fun IndustrySelectScreen(
     onIndustryConfirmed: (Int, String) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val isNoInternet by viewModel.isNoInternet.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.loadIndustries()
@@ -61,6 +64,7 @@ fun IndustrySelectScreen(
         modifier = Modifier,
         onNavigationClick = onNavigateBack,
         state = state,
+        isNoInternet = isNoInternet,
         onSearchQueryChange = viewModel::updateTextFilterField,
         onIndustrySelected = viewModel::selectIndustry,
         onConfirmClick = {
@@ -78,6 +82,7 @@ fun IndustrySelectContent(
     modifier: Modifier = Modifier,
     onNavigationClick: () -> Unit,
     state: IndustrySelectState,
+    isNoInternet: Boolean = false,
     onSearchQueryChange: (String) -> Unit,
     onIndustrySelected: (Int) -> Unit,
     onConfirmClick: () -> Unit
@@ -119,10 +124,13 @@ fun IndustrySelectContent(
                 .weight(1f)
                 .padding(horizontal = 16.dp)
         ) {
-            IndustryContentState(
-                state = state,
-                onIndustrySelected = onIndustrySelected
-            )
+            when {
+                isNoInternet -> NoInternetState()
+                else -> IndustryContentState(
+                    state = state,
+                    onIndustrySelected = onIndustrySelected
+                )
+            }
         }
 
         IndustryConfirmButton(

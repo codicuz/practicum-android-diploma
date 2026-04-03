@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 fun SimpleScreenTitle(
     text: Int,
     modifier: Modifier = Modifier,
-    height: Dp = 64.dp,
+    height: Dp = 48.dp,
     style: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.titleMedium
 ) {
     Box(

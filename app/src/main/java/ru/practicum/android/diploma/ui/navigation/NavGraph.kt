@@ -3,8 +3,10 @@ package ru.practicum.android.diploma.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import ru.practicum.android.diploma.ui.favorite.FavoriteScreen
 import ru.practicum.android.diploma.ui.filter.CountrySelectScreen
@@ -14,6 +16,7 @@ import ru.practicum.android.diploma.ui.filter.JobLocationScreen
 import ru.practicum.android.diploma.ui.filter.RegionSelectScreen
 import ru.practicum.android.diploma.ui.search.SearchScreen
 import ru.practicum.android.diploma.ui.team.TeamScreen
+import ru.practicum.android.diploma.ui.vacancy.VacancyScreen
 
 @Composable
 fun NavGraph(
@@ -31,9 +34,25 @@ fun NavGraph(
         ) {
             composable(route = Screen.Home.route) {
                 SearchScreen(
+                    onVacancyClick = { vacancyId ->
+                        navController.navigate(Screen.VacancyDetail.createRoute(vacancyId))
+                    },
                     onFilterClick = {
                         navController.navigate(Screen.Filter.route)
                     }
+                )
+            }
+
+            composable(
+                route = Screen.VacancyDetail.route,
+                arguments = listOf(
+                    navArgument("vacancyId") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val vacancyId = backStackEntry.arguments?.getString("vacancyId") ?: ""
+                VacancyScreen(
+                    vacancyId = vacancyId,
+                    onNavigateBack = { navController.navigateUp() }
                 )
             }
 
@@ -112,7 +131,11 @@ fun NavGraph(
         }
 
         composable(route = Screen.Favourite.route) {
-            FavoriteScreen()
+            FavoriteScreen(
+                onVacancyClick = { vacancyId ->
+                    navController.navigate(Screen.VacancyDetail.createRoute(vacancyId))
+                },
+            )
         }
 
         composable(route = Screen.Team.route) {
