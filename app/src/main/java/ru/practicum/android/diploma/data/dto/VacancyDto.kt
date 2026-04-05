@@ -63,7 +63,7 @@ data class ContactsDto(
     val id: String?,
     val name: String?,
     val email: String?,
-    val phone: List<PhoneDto>?
+    val phones: List<PhoneDto>?
 )
 
 data class IndustryRefDto(
