@@ -3,6 +3,7 @@ package ru.practicum.android.diploma.data.dto
 import com.google.gson.annotations.SerializedName
 
 data class VacancyDto(
+    val vId: Long,
     val id: String,
     val name: String,
     val salary: SalaryDto?,

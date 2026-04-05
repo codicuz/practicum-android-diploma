@@ -48,14 +48,14 @@ class FavoriteRepositoryImpl(
 
     private fun vacancyDetailToVacancy(vacancy: VacancyDetail): Vacancy {
         return Vacancy(
-            vacancy.id,
-            vacancy.name,
-            vacancy.employerName,
-            vacancy.employerLogo,
-            vacancy.areaName,
-            vacancy.salaryFrom,
-            vacancy.salaryTo,
-            vacancy.salaryCurrency,
+            id = vacancy.id,
+            name = vacancy.name,
+            employerName = vacancy.employerName,
+            employerLogoUrl = vacancy.employerLogo,
+            areaName = vacancy.areaName,
+            salaryFrom = vacancy.salaryFrom,
+            salaryTo = vacancy.salaryTo,
+            salaryCurrency = vacancy.salaryCurrency,
         )
     }
 }

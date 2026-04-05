@@ -3,6 +3,7 @@ package ru.practicum.android.diploma.ui.favorite
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -55,10 +56,13 @@ fun FavoriteContent(state: FavoriteState, onItemClick: (String) -> Unit) {
             is FavoriteState.Empty -> NotifyImage(R.drawable.list_empty, R.string.favorite_empty)
             is FavoriteState.Error -> NotifyImage(R.drawable.cat, R.string.favorite_error)
             is FavoriteState.Success -> LazyColumn {
-                items(state.vacancies.size) { index ->
+                items(
+                    items = state.vacancies,
+                    key = { it.id }
+                ) { vacancy ->
                     VacancyItem(
-                        vacancy = state.vacancies[index],
-                        onClick = { onItemClick(state.vacancies[index].id) }
+                        vacancy = vacancy,
+                        onClick = { onItemClick(vacancy.id) }
                     )
                 }
             }

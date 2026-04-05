@@ -100,6 +100,7 @@ class VacancyRepositoryImpl(
 
     private fun VacancyDto.toDetail(): VacancyDetail {
         return VacancyDetail(
+            vId = vId,
             id = id,
             name = name,
             description = description ?: "",
