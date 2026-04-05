@@ -115,7 +115,7 @@ class VacancyRepositoryImpl(
             address = address?.fullAddress,
             contactName = contacts?.name,
             contactEmail = contacts?.email,
-            contactPhones = contacts?.phone?.map { it.toPhoneInfo() } ?: emptyList(),
+            contactPhones = contacts?.phones?.map { it.toPhoneInfo() } ?: emptyList(),
             skills = skills ?: emptyList(),
             url = url
         )
