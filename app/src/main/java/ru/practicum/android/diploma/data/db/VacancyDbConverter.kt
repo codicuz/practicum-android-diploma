@@ -12,6 +12,7 @@ class VacancyDbConverter {
 
     fun map(vacancy: VacancyDetail): VacancyEntity {
         return VacancyEntity(
+            vId = vacancy.vId,
             id = vacancy.id,
             name = vacancy.name,
             description = vacancy.description,
@@ -35,6 +36,7 @@ class VacancyDbConverter {
 
     fun map(vacancy: VacancyEntity): VacancyDetail {
         return VacancyDetail(
+            vId = vacancy.vId,
             id = vacancy.id,
             name = vacancy.name,
             description = vacancy.description,

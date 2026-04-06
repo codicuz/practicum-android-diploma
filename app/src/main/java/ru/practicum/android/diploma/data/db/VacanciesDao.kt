@@ -14,13 +14,13 @@ interface VacanciesDao {
     @Query("DELETE FROM vacancies WHERE id = :idVacancy")
     suspend fun delete(idVacancy: String)
 
-    @Query("SELECT * FROM vacancies")
+    @Query("SELECT * FROM vacancies ORDER BY vId DESC")
     suspend fun getAll(): List<VacancyEntity>
 
     @Query("SELECT * FROM vacancies WHERE id = :id")
     suspend fun getVacancyById(id: String): VacancyEntity?
 
-    @Query("SELECT EXISTS(SELECT * FROM vacancies WHERE id = :id)")
+    @Query("SELECT EXISTS (SELECT * FROM vacancies WHERE id = :id ORDER BY vId DESC)")
     suspend fun vacancySaved(id: String): Boolean
 
 }
