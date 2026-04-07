@@ -74,12 +74,6 @@ fun SearchScreen(
 
     val hasActiveFilters = filterState.hasActiveFilters()
 
-    LaunchedEffect(filterState) {
-        if (searchQuery.isNotBlank()) {
-            viewModel.refreshSearchWithFilters()
-        }
-    }
-
     LaunchedEffect(Unit) {
         viewModel.toastEvent.collect { event ->
             val message = when (event) {
@@ -89,6 +83,7 @@ fun SearchScreen(
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
     }
+
     SearchContent(
         state = state,
         searchQuery = searchQuery,

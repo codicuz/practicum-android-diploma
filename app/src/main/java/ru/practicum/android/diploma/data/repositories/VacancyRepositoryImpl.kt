@@ -100,6 +100,7 @@ class VacancyRepositoryImpl(
 
     private fun VacancyDto.toDetail(): VacancyDetail {
         return VacancyDetail(
+            vId = vId,
             id = id,
             name = name,
             description = description ?: "",
@@ -115,7 +116,7 @@ class VacancyRepositoryImpl(
             address = address?.fullAddress,
             contactName = contacts?.name,
             contactEmail = contacts?.email,
-            contactPhones = contacts?.phone?.map { it.toPhoneInfo() } ?: emptyList(),
+            contactPhones = contacts?.phones?.map { it.toPhoneInfo() } ?: emptyList(),
             skills = skills ?: emptyList(),
             url = url
         )

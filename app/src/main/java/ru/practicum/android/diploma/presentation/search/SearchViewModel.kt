@@ -28,6 +28,7 @@ class SearchViewModel(
 ) : ViewModel() {
 
     private var currentFilters = FilterState.DEFAULT
+    private var lastAppliedFilters = FilterState.DEFAULT
 
     private val _isNoInternet = MutableStateFlow(false)
     val isNoInternet: StateFlow<Boolean> = _isNoInternet.asStateFlow()
@@ -49,7 +50,12 @@ class SearchViewModel(
     init {
         viewModelScope.launch {
             filterViewModel.state.collect { filterState ->
+                val oldFilters = currentFilters
                 currentFilters = filterState
+
+                if (oldFilters != filterState && _searchQuery.value.isNotBlank()) {
+                    refreshSearchWithFilters()
+                }
             }
         }
     }
@@ -57,6 +63,7 @@ class SearchViewModel(
     fun applyFiltersAndSearch() {
         val currentQuery = _searchQuery.value
         if (currentQuery.isNotBlank()) {
+            lastAppliedFilters = currentFilters
             restartSearch()
         }
     }
@@ -94,6 +101,7 @@ class SearchViewModel(
             currentPage = 0
             maxPages = 0
             _state.value = SearchScreenState.Default
+            lastAppliedFilters = FilterState.DEFAULT
         } else {
             _state.value = SearchScreenState.Loading
             searchDebounce(query)
@@ -106,8 +114,7 @@ class SearchViewModel(
         currentPage = 0
         maxPages = 0
         _state.value = SearchScreenState.Default
-        resetSearch()
-
+        lastAppliedFilters = FilterState.DEFAULT
     }
 
     fun onLoadNextPage() {
@@ -139,7 +146,8 @@ class SearchViewModel(
 
     fun refreshSearchWithFilters() {
         val currentQuery = _searchQuery.value
-        if (currentQuery.isNotBlank()) {
+        if (currentQuery.isNotBlank() && currentFilters != lastAppliedFilters) {
+            lastAppliedFilters = currentFilters
             currentVacancies.clear()
             currentPage = 0
             maxPages = 0
@@ -170,13 +178,6 @@ class SearchViewModel(
                 }
             }
         }
-    }
-
-    private fun resetSearch() {
-        currentVacancies.clear()
-        currentPage = 0
-        maxPages = 0
-        _state.value = SearchScreenState.Default
     }
 
     private fun canLoadNextPage(): Boolean {
@@ -236,6 +237,7 @@ class SearchViewModel(
                 found = data.found
             )
         }
+        lastAppliedFilters = currentFilters
     }
 
     private fun onSearchError(code: Int?, message: String?) {
